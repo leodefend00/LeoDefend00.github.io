@@ -4,140 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=10">
+    <link rel="manifest" href="manifest.json?v=11">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="apple-mobile-web-app-title" content="Finance Master">
+    <link rel="apple-touch-icon" href="logo.png?v=11">
 
-    <title>Finance Elite Master</title>
+    <title>Finance Elite Master - Custom Persistent</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.15);
-            --accent: #ffffff; --text: #ffffff; --bg-color: #121212;
-            --col-ing: #2ecc71; --col-gas: #e74c3c; --col-aho: #f1c40f; 
+            --accent: #ffffff;
+            --text: #ffffff;
+            --bg-color: #0d0d0d;
+            --col-ing: #2ecc71; 
+            --col-gas: #e74c3c; 
+            --col-aho: #f1c40f; 
         }
 
         .light-mode {
-            --glass: rgba(0, 0, 0, 0.03); --glass-border: rgba(0, 0, 0, 0.1);
-            --accent: #000000; --text: #000000; --bg-color: #ffffff;
+            --glass: rgba(0, 0, 0, 0.03);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --accent: #000000;
+            --text: #000000;
+            --bg-color: #ffffff;
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s, border-color 0.3s; -webkit-tap-highlight-color: transparent; }
 
         body {
             background: var(--bg-color); color: var(--text); 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
             display: flex; justify-content: center; margin: 0; min-height: 100vh;
             padding-top: env(safe-area-inset-top, 20px);
             padding-bottom: env(safe-area-inset-bottom, 20px);
+            overflow-x: hidden;
         }
 
         .app-card {
-            background: var(--glass); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border); border-radius: 35px;
-            width: 95%; max-width: 440px; padding: 20px 12px; margin: 10px auto;
+            width: 92%; max-width: 420px; 
+            /* Ajuste para evitar que se estire demasiado en pantallas largas */
+            padding: 22px 18px; margin: 10px auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            align-self: flex-start; /* Evita el estiramiento vertical forzado */
         }
 
-        .header-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--glass-border);
-        }
-        
-        .month-select { background: transparent; border: none; color: var(--accent); font-size: 1.2rem; font-weight: 800; text-transform: uppercase; outline: none; flex: 1; }
-
-        .currency-pill {
-            display: flex; background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 12px; padding: 3px; gap: 3px; margin: 0 10px;
-        }
-        .cur-btn { font-size: 0.55rem; padding: 6px 10px; border-radius: 9px; cursor: pointer; font-weight: 800; opacity: 0.3; }
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
+        .month-select { background: transparent; border: none; color: var(--accent); font-size: 1.5rem; font-weight: 800; text-transform: uppercase; outline: none; flex-grow: 1; letter-spacing: -0.5px; }
+        .currency-toggle { display: flex; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 3px; gap: 3px; }
+        .cur-btn { font-size: 0.6rem; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-weight: 800; color: var(--text); opacity: 0.3; }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
+        .theme-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; }
 
         .annual-summary {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 12px; margin-bottom: 25px;
-            display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; text-align: center;
+            border-radius: 22px; padding: 18px; margin-bottom: 20px;
+            display: flex; justify-content: space-around; text-align: center;
         }
-        .annual-item span { display: block; font-size: 0.45rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
-        .annual-item b { font-size: 0.7rem; font-weight: 700; white-space: nowrap; }
+        .annual-item span { display: block; font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
+        .annual-item b { font-size: 0.85rem; font-weight: 800; letter-spacing: -0.3px; }
 
-        .rates-container { display: flex; gap: 8px; margin-bottom: 20px; }
-        .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); }
-        .rate-card b { font-size: 0.9rem; }
-        .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+        .rates-container { display: flex; gap: 10px; margin-bottom: 20px; }
+        .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
+        .rate-card b { font-size: 1rem; font-weight: 700; display: block; margin-bottom: 2px; }
+        .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+        .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
 
-        .section-label { font-size: 0.65rem; letter-spacing: 1.5px; margin: 20px 0 10px 5px; font-weight: 700; text-transform: uppercase; }
-
-        .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 20px; margin-bottom: 8px; }
-        .entry-row { display: flex; align-items: center; gap: 8px; }
+        .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
+        .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
+        .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
         
-        .emoji-box { background: rgba(255,255,255,0.05); border-radius: 10px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--glass-border); }
-        .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.85rem; min-width: 60px; }
+        /* Input de emoji editable */
+        .emoji-input { 
+            background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0;
+            text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none;
+            padding: 0; cursor: pointer;
+        }
         
+        .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.9rem; font-weight: 500; min-width: 50px; }
         .amount-group { display: flex; flex-direction: column; width: 75px; flex-shrink: 0; }
-        .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.9rem; }
-        .sync-label { font-size: 0.6rem; opacity: 0.4; text-align: right; margin-top: 3px; }
-
-        .add-btn { background: transparent; border: 1px dashed var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.65rem; font-weight: 600; }
-
-        .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
-        #total-bs { font-size: 2.3rem; font-weight: 800; display: block; letter-spacing: -1px; }
+        .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.95rem; }
+        .sync-label { font-size: 0.6rem; opacity: 0.4; text-align: right; display: block; margin-top: 4px; font-weight: 600; }
+        .delete-btn { color: var(--text); cursor: pointer; font-size: 1.2rem; opacity: 0.2; padding-left: 5px; transition: 0.2s; }
+        .delete-btn:active { opacity: 1; color: var(--col-gas); }
+        .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
         
-        .chart-box { height: 160px; width: 100%; margin-top: 25px; }
+        .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+        #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
+        #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
+        
+        .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
     </style>
 </head>
 <body>
 
     <div class="app-card">
-        <header class="header-row">
+        <div class="header-row">
             <select id="selector-mes" class="month-select" onchange="cambiarMes()"></select>
-            <div class="currency-pill">
+            <div class="currency-toggle">
                 <div id="cur-bs" class="cur-btn active" onclick="setMonedaAnual('bs')">BS</div>
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
-            <div onclick="toggleTheme()" style="cursor:pointer; font-size: 1.1rem;">🌗</div>
-        </header>
-
-        <section class="annual-summary">
-            <div class="annual-item"><span>Ingreso Año</span><b id="ann-ing" style="color: var(--col-ing);">Bs 0</b></div>
-            <div class="annual-item"><span>Gasto Año</span><b id="ann-gas" style="color: var(--col-gas);">Bs 0</b></div>
-            <div class="annual-item"><span>Ahorro Año</span><b id="ann-aho" style="color: var(--col-aho);">Bs 0</b></div>
-        </section>
-
-        <div class="rates-container">
-            <div id="btn-bcv" class="rate-card active" onclick="seleccionarTasa('bcv')"><span>BCV</span><br><b id="val-bcv">0.00</b></div>
-            <div id="btn-usdt" class="rate-card" onclick="seleccionarTasa('usdt')"><span>P2P</span><br><b id="val-usdt">0.00</b></div>
+            <button class="theme-btn" onclick="toggleTheme()">🌗</button>
         </div>
 
-        <div class="section-label" style="color: var(--col-ing);">+ INGRESOS</div>
+        <div class="annual-summary">
+            <div class="annual-item"><span>Ingreso Anual</span><b id="ann-ing" style="color: var(--col-ing);">Bs 0</b></div>
+            <div class="annual-item"><span>Gasto Anual</span><b id="ann-gas" style="color: var(--col-gas);">Bs 0</b></div>
+            <div class="annual-item"><span>Ahorro Anual</span><b id="ann-aho" style="color: var(--col-aho);">Bs 0</b></div>
+        </div>
+
+        <div class="rates-container">
+            <div id="btn-bcv" class="rate-card active" onclick="seleccionarTasa('bcv')"><b>---</b><small>BCV Oficial</small></div>
+            <div id="btn-usdt" class="rate-card" onclick="seleccionarTasa('usdt')"><b>---</b><small>Paralelo P2P</small></div>
+        </div>
+
+        <div class="section-label" style="color: var(--col-ing);">+ Ingresos</div>
         <div id="lista-ingresos"></div>
         <button class="add-btn" onclick="agregarEntrada('ingresos')">+ Nuevo Ingreso</button>
 
-        <div class="section-label" style="color: var(--col-gas);">− GASTOS</div>
+        <div class="section-label" style="color: var(--col-gas); margin-top: 20px;">- Gastos</div>
         <div id="lista-gastos"></div>
         <button class="add-btn" onclick="agregarEntrada('gastos')">+ Nuevo Gasto</button>
 
-        <div class="section-label" style="color: var(--col-aho);">🏦 AHORROS</div>
+        <div class="section-label" style="color: var(--col-aho); margin-top: 20px;">🏦 Ahorros</div>
         <div id="lista-ahorros"></div>
         <button class="add-btn" onclick="agregarEntrada('ahorros')">+ Nuevo Ahorro</button>
 
         <div class="balance-section">
             <span id="total-bs">Bs 0,00</span>
-            <span id="total-usd" style="opacity: 0.6; font-size: 0.9rem;">$ 0.00</span>
+            <span id="total-usd">$ 0.00</span>
         </div>
 
         <div class="chart-box"><canvas id="barChart"></canvas></div>
-        <div class="chart-box" style="height: 200px;"><canvas id="doughnutChart"></canvas></div>
+        <div class="chart-box" style="height: 220px;"><canvas id="doughnutChart"></canvas></div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'FINANCE_ELITE_DATA_FINAL'; 
-        let rates = { bcv: 1, usdt: 1 }, tasaSeleccionada = 'bcv', monedaAnual = 'bs', mesActual = "", registroAnual = {}, barChart, doughnutChart;
+        // --- REGISTRO SEGURO DE SERVICE WORKER (FIX URL PROTOCOL) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                if (window.location.protocol.startsWith('http')) {
+                    navigator.serviceWorker.register('sw.js')
+                        .then(reg => console.log("PWA Registrada"))
+                        .catch(err => console.warn("SW no registrado en este entorno"));
+                }
+            });
+        }
+
+        // --- REGLA DE PERSISTENCIA MAESTRA ---
+        const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
+        const OLD_KEYS = ['FINANCE_ELITE_DATA_FINAL', 'FINANCE_MASTER_PRO_V33', 'FINANCE_MASTER_PERMANENT_DATA'];
+
+        let rates = { bcv: 1, usdt: 1 };
+        let tasaSeleccionada = 'bcv';
+        let monedaAnual = 'bs';
+        let barChart, doughnutChart;
+        
+        const fmtBs = new Intl.NumberFormat('es-VE', { maximumFractionDigits: 0 });
+        const fmtUsd = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const fmtFull = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2 });
         const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        let mesActual = meses[new Date().getMonth()];
+        let registroAnual = {};
 
         async function inicializar() {
-            mesActual = meses[new Date().getMonth()];
             const selector = document.getElementById('selector-mes');
             meses.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); selector.appendChild(o); });
             selector.value = mesActual;
@@ -149,102 +184,169 @@
             setInterval(getRates, 300000);
         }
 
+        function setMonedaAnual(m) {
+            monedaAnual = m;
+            document.getElementById('cur-bs').classList.toggle('active', m === 'bs');
+            document.getElementById('cur-usd').classList.toggle('active', m === 'usd');
+            actualizarCalculos();
+        }
+
         async function getRates() {
             try {
                 const r = await fetch('https://ve.dolarapi.com/v1/dolares');
                 const d = await r.json();
                 rates.bcv = d.find(x => x.nombre === "Oficial").promedio;
                 rates.usdt = d.find(x => x.nombre === "Paralelo").promedio;
-                document.getElementById('val-bcv').innerText = rates.bcv.toFixed(2);
-                document.getElementById('val-usdt').innerText = rates.usdt.toFixed(2);
+                document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2);
+                document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2);
                 actualizarCalculos();
-            } catch (e) { console.warn("Modo Offline"); }
+            } catch (e) { console.warn("API Offline"); }
         }
 
-        function sync(tipo, idx, origen, valor) {
-            const tVal = rates[tasaSeleccionada], item = registroAnual[mesActual][tipo][idx], num = parseFloat(valor) || 0;
-            if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); document.getElementById(`${tipo}-usd-${idx}`).value = item.usd; } 
-            else { item.usd = num; item.bs = Math.round(num * tVal); document.getElementById(`${tipo}-bs-${idx}`).value = item.bs; }
-            document.getElementById(`${tipo}-lbl-usd-${idx}`).innerText = `$ ${(item.bs/tVal).toFixed(2)}`;
-            document.getElementById(`${tipo}-lbl-bs-${idx}`).innerText = `Bs ${Math.round(item.usd*tVal)}`;
+        function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
+        
+        function agregarEntrada(tipo) { 
+            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; 
+            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; 
+            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); 
+            renderTodo(); 
             actualizarCalculos();
         }
 
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
 
-        function renderLista(tipo, id) {
-            const lista = document.getElementById(id), tVal = rates[tasaSeleccionada], data = registroAnual[mesActual][tipo] || [];
-            lista.innerHTML = "";
-            const icon = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' };
-            data.forEach((item, i) => {
-                const div = document.createElement('div'); div.className = "entry-card";
+        function renderLista(tipo, id) { 
+            const lista = document.getElementById(id); lista.innerHTML = ""; 
+            const tVal = rates[tasaSeleccionada]; 
+            const data = registroAnual[mesActual][tipo] || []; 
+            data.forEach((item, i) => { 
+                const div = document.createElement('div'); 
+                div.className = "entry-card"; 
                 div.innerHTML = `<div class="entry-row">
-                    <div class="emoji-box">${icon[tipo]}</div>
-                    <input type="text" class="desc-input" placeholder="Nombre" value="${item.desc}" oninput="registroAnual[mesActual]['${tipo}'][${i}].desc=this.value; guardar()">
+                    <!-- Input de emoji ahora es parte de la data editable -->
+                    <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
+                    <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
                     <div class="amount-group">
-                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" value="${item.bs || ''}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
-                        <span class="sync-label" id="${tipo}-lbl-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
+                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
+                        <span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span>
                     </div>
-                    <div class="amount-group" style="margin-left:5px">
-                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" value="${item.usd || ''}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
-                        <span class="sync-label" id="${tipo}-lbl-bs-${i}">Bs ${Math.round(item.usd*tVal)}</span>
+                    <div class="amount-group" style="margin-left:5px;">
+                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
+                        <span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span>
                     </div>
-                    <span style="opacity:0.2" onclick="registroAnual[mesActual]['${tipo}'].splice(${i}, 1); renderTodo(); actualizarCalculos();">✕</span>
-                </div>`;
-                lista.appendChild(div);
-            });
+                    <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
+                </div>`; 
+                lista.appendChild(div); 
+            }); 
         }
+
+        function sync(tipo, idx, origen, valor) { 
+            const tVal = rates[tasaSeleccionada]; 
+            const item = registroAnual[mesActual][tipo][idx]; 
+            const num = parseFloat(valor) || 0; 
+            if (origen === 'bs') { 
+                item.bs = num; item.usd = (num / tVal).toFixed(2); 
+                document.getElementById(`${tipo}-usd-${idx}`).value = item.usd; 
+            } else { 
+                item.usd = num; item.bs = (num * tVal).toFixed(2); 
+                document.getElementById(`${tipo}-bs-${idx}`).value = item.bs; 
+            } 
+            actualizarCalculos(); 
+            renderTodo(); 
+        }
+
+        function editar(t, idx, c, v) { 
+            registroAnual[mesActual][t][idx][c] = v; 
+            actualizarCalculos(); 
+        }
+
+        function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
 
         function actualizarCalculos() {
             const tVal = rates[tasaSeleccionada];
-            let totA = { ing: 0, gas: 0, aho: 0 };
-            meses.forEach(m => { 
-                if (registroAnual[m]) { 
-                    totA.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); 
-                    totA.gas += (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); 
-                    totA.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); 
-                } 
+            let totAnual = { ing: 0, gas: 0, aho: 0 };
+
+            meses.forEach(m => {
+                if (registroAnual[m]) {
+                    totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
+                    totAnual.gas += (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
+                    totAnual.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
+                }
             });
-            const fmtA = (v) => monedaAnual === 'bs' ? `Bs ${new Intl.NumberFormat('es-VE').format(Math.round(v))}` : `$ ${new Intl.NumberFormat('en-US').format(Math.round(v/tVal))}`;
-            document.getElementById('ann-ing').innerText = fmtA(totA.ing);
-            document.getElementById('ann-gas').innerText = fmtA(totA.gas);
-            document.getElementById('ann-aho').innerText = fmtA(totA.aho);
+
+            const format = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
+            document.getElementById('ann-ing').innerText = format(totAnual.ing);
+            document.getElementById('ann-gas').innerText = format(totAnual.gas);
+            document.getElementById('ann-aho').innerText = format(totAnual.aho);
 
             const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const saldo = tIng - tGas - tAho;
 
-            document.getElementById('total-bs').innerText = `Bs ${new Intl.NumberFormat('es-VE', {minimumFractionDigits:2}).format(saldo)}`;
-            document.getElementById('total-bs').style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
+            const elBs = document.getElementById('total-bs');
+            elBs.innerText = `Bs ${fmtFull.format(saldo)}`;
+            elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
             document.getElementById('total-usd').innerText = `$ ${(saldo / tVal).toFixed(2)}`;
-            updateCharts(tIng, tGas, tAho, saldo); guardar();
+
+            updateCharts(tIng, tGas, tAho, saldo);
+            guardarEnLocal();
         }
 
-        function setMonedaAnual(m) { monedaAnual = m; document.getElementById('cur-bs').classList.toggle('active', m === 'bs'); document.getElementById('cur-usd').classList.toggle('active', m === 'usd'); actualizarCalculos(); }
-        function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
-        function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; registroAnual[mesActual][tipo].push({ desc: "", bs: 0, usd: 0 }); renderTodo(); }
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); initCharts(); actualizarCalculos(); }
-        function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; renderTodo(); actualizarCalculos(); }
-        function guardar() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual })); }
-        function cargarDeLocal() { const store = localStorage.getItem(STORAGE_KEY); if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; setMonedaAnual(monedaAnual); } else { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } }
         
-        function initCharts() {
-            const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff';
-            barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 8 } }, grid: { display: false } } } } });
-            doughnutChart = new Chart(document.getElementById('doughnutChart'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: document.body.classList.contains('light-mode')?'#fff':'#121212', cutout: '65%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { color: textColor, font: { size: 9 }, usePointStyle: true } } } } });
+        function cambiarMes() { 
+            mesActual = document.getElementById('selector-mes').value; 
+            if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; }
+            renderTodo(); 
+            actualizarCalculos(); 
         }
 
-        function updateCharts(ing, gas, aho, sal) {
-            const barLabels = [], barData = [], barColors = [];
-            (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(i.desc.substring(0,4)); barData.push(i.bs); barColors.push('#2ecc71'); });
-            (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(g.desc.substring(0,4)); barData.push(g.bs); barColors.push('#e74c3c'); });
-            (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(a.desc.substring(0,4)); barData.push(a.bs); barColors.push('#f1c40f'); });
-            barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update();
-            doughnutChart.data.labels = ["Gastos", "Ahorros", "Libre"];
-            doughnutChart.data.datasets[0].data = [gas, aho, sal > 0 ? sal : 0];
-            doughnutChart.data.datasets[0].backgroundColor = ["#e74c3c", "#f1c40f", "#2ecc71"];
-            doughnutChart.update();
+        function guardarEnLocal() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual })); 
+        }
+
+        function cargarDeLocal() { 
+            let store = localStorage.getItem(STORAGE_KEY);
+            if (!store) {
+                for (let key of OLD_KEYS) {
+                    let oldData = localStorage.getItem(key);
+                    if (oldData) { store = oldData; break; }
+                }
+            }
+            if (store) { 
+                const obj = JSON.parse(store); 
+                registroAnual = obj.data || {}; 
+                mesActual = obj.mes || mesActual; 
+                tasaSeleccionada = obj.tasa || 'bcv'; 
+                monedaAnual = obj.curAnual || 'bs'; 
+                setMonedaAnual(monedaAnual); 
+            } else { 
+                meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; });
+            } 
+        }
+
+        function initCharts() { 
+            const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff'; 
+            barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 9 } }, grid: { display: false } } } } }); 
+            doughnutChart = new Chart(document.getElementById('doughnutChart'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: document.body.classList.contains('light-mode')?'#fff':'#0d0d0d', cutout: '65%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { color: textColor, font: { size: 10 }, usePointStyle: true } } } } }); 
+        }
+
+        function updateCharts(ing, gas, aho, sal) { 
+            const barLabels = []; const barData = []; const barColors = []; 
+            // Los gráficos ahora usan los emojis personalizados
+            (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(`${i.icono || '💼'} ${i.desc.substring(0,4)}`); barData.push(i.bs); barColors.push('#2ecc71'); }); 
+            (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(`${g.icono || '🛒'} ${g.desc.substring(0,4)}`); barData.push(g.bs); barColors.push('#e74c3c'); }); 
+            (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
+            
+            barChart.data.labels = barLabels; 
+            barChart.data.datasets[0].data = barData; 
+            barChart.data.datasets[0].backgroundColor = barColors; 
+            barChart.update(); 
+
+            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
+            if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
+            doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
         }
         
         inicializar();
