@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=19">
+    <!-- Configuración PWA y Logotipos -->
+    <link rel="manifest" href="manifest.json?v=20">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="shortcut icon" href="logo.png">
+    <meta name="mobile-web-app-capable" content="yes">
 
     <title>Finance Elite Master - Mobile Precision</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -31,7 +35,6 @@
             --bg-color: #ffffff;
         }
 
-        /* Reset y Prevención de Desbordamiento */
         * { box-sizing: border-box; transition: background 0.3s, color 0.3s, border-color 0.3s; -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -50,25 +53,19 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             align-self: flex-start;
             position: relative;
-            overflow: hidden; /* Garantiza que nada salga de la tarjeta */
+            overflow: hidden;
         }
 
-        /* HEADER OPTIMIZADO PARA NO SOBRESALIR */
         .header-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 15px; 
-            gap: 5px; 
-            width: 100%;
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 15px; gap: 5px; width: 100%;
         }
         
         .month-select { 
             background: transparent; border: none; color: var(--accent); 
             font-size: 1.4rem; font-weight: 850; text-transform: uppercase; 
             outline: none; flex-grow: 1; letter-spacing: -1px;
-            max-width: 60%; /* Evita que el nombre del mes empuje los botones fuera */
-            text-overflow: ellipsis;
+            max-width: 60%; text-overflow: ellipsis;
         }
 
         .currency-toggle { 
@@ -83,7 +80,6 @@
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
         
         .header-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
-        
         .theme-btn { 
             background: var(--glass); border: 1px solid var(--glass-border); 
             color: var(--text); width: 36px; height: 36px; border-radius: 50%; 
@@ -91,7 +87,6 @@
             cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
         }
 
-        /* Contenedores de información */
         .annual-summary {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
             border-radius: 22px; padding: 18px; margin-bottom: 20px;
@@ -106,15 +101,13 @@
         .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
 
-        /* Listas y Entradas */
         .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
         
         .emoji-input { 
             background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0;
-            text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none;
-            padding: 0; cursor: pointer;
+            text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none; padding: 0; cursor: pointer;
         }
         
         .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.9rem; font-weight: 500; min-width: 50px; }
@@ -129,7 +122,6 @@
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
 
-        /* Inteligencia Financiera */
         .tip-box {
             background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2);
             padding: 15px; border-radius: 22px; margin-top: 25px;
@@ -140,12 +132,10 @@
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
         .chart-label { font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
 
-        /* Guía Interactiva */
         .guide-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); backdrop-filter: blur(20px);
-            z-index: 1000; display: none; 
-            overflow-y: auto; padding: 40px 20px;
+            z-index: 1000; display: none; overflow-y: auto; padding: 40px 20px;
         }
         .guide-content { max-width: 500px; margin: 0 auto; color: #fff; padding-bottom: 60px; text-align: center; position: relative; }
         .guide-header { margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; position: relative; }
@@ -179,33 +169,23 @@
                 <div class="guide-title">GUÍA MAESTRA</div>
                 <div id="step-counter" class="guide-step-counter">PASO 1 DE 9</div>
             </div>
-
-            <div id="guide-body" class="guide-body">
-                <!-- Contenido dinámico -->
-            </div>
-
+            <div id="guide-body" class="guide-body"></div>
             <div class="guide-footer">
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">
-                FINANCE ELITE MASTER v39.0
-            </div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v40.0</div>
         </div>
     </div>
 
     <div class="app-card">
         <div class="header-row">
             <select id="selector-mes" class="month-select" onchange="cambiarMes()"></select>
-            
             <div class="currency-toggle">
                 <div id="cur-bs" class="cur-btn active" onclick="setMonedaAnual('bs')">BS</div>
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
-
             <div class="header-actions">
-                <!-- Solo el botón de tema para evitar sobrecarga visual -->
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
         </div>
@@ -283,7 +263,7 @@
             { title: "Resumen Anual", icon: "🌍", text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero." },
             { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)." },
             { title: "Divisas y Tasas", icon: "💰", text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real." },
-            { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra (Sueldos, ventas).<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale (Comida, servicios).<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
+            { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra.<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale.<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
             { title: "Gráficos de Inteligencia", icon: "📊", text: "Analiza tu dinero visualmente:<br><br>📊 **Barras:** Cuál registro pesa más.<br><br>🍩 **Dona:** Porcentaje de ingresos realmente **Libre**.<br><br>📈 **Salud del Bolsillo:** Si la línea está arriba y en verde, ¡felicidades! Si baja al rojo, revisa tus gastos." },
             { title: "Personalización Total", icon: "✨", text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán. ¡Es hora de empezar!" }
         ];
@@ -294,23 +274,20 @@
             const counter = document.getElementById('step-counter');
             const btnPrev = document.getElementById('btn-prev');
             const btnNext = document.getElementById('btn-next');
-
             if (step.install) {
                 body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p><ul class="install-step-list"><li><span class="step-badge">1</span> <b>iPhone:</b> Toca "Compartir" y selecciona <b>"Agregar al inicio"</b>.</li><li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos y elige <b>"Instalar aplicación"</b>.</li><li><span class="step-badge">3</span> <b>PC:</b> Dale a <b>"Instalar"</b> en la barra de direcciones.</li></ul></div>`;
             } else {
                 body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p></div>`;
             }
-
             counter.innerText = `PASO ${currentStep + 1} DE ${guideSteps.length}`;
             btnPrev.style.display = currentStep === 0 ? 'none' : 'block';
             btnNext.innerText = currentStep === guideSteps.length - 1 ? 'EMPEZAR AHORA' : 'SIGUIENTE';
         }
-
         function changeStep(delta) { solicitarPermisoAutomatico(); currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
         function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
         function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
-        // --- SERVICE WORKER & SYNC (FIX SECURITY ERROR) ---
+        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN (FIX DESKTOP SYNC) ---
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
@@ -326,6 +303,15 @@
             document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); }); } });
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
         }
+
+        // --- LISTENER DE SINCRONIZACIÓN ENTRE VENTANAS (WEB <-> DESKTOP) ---
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY) {
+                cargarDeLocal();
+                renderTodo();
+                actualizarCalculos();
+            }
+        });
 
         const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
         const OLD_KEYS = ['FINANCE_ELITE_DATA_FINAL', 'FINANCE_MASTER_PRO_V33', 'FINANCE_MASTER_PERMANENT_DATA'];
@@ -433,7 +419,10 @@
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
-        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
+        
+        function guardarEnLocal() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); 
+        }
 
         function cargarDeLocal() { 
             let store = localStorage.getItem(STORAGE_KEY);
@@ -455,11 +444,17 @@
             (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(`${g.icono || '🛒'} ${g.desc.substring(0,4)}`); barData.push(g.bs); barColors.push('#e74c3c'); }); 
             (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
             barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
-            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
+            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
+            if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
             doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
-            const currentIdx = meses.indexOf(mesActual); lineChart.data.datasets[0].data = saldosAnuales;
-            const currentVal = saldosAnuales[currentIdx]; lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c'; lineChart.data.datasets[0].pointBorderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c'; lineChart.update();
+            const currentIdx = meses.indexOf(mesActual);
+            lineChart.data.datasets[0].data = saldosAnuales;
+            const currentVal = saldosAnuales[currentIdx];
+            lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
+            lineChart.data.datasets[0].pointBorderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
+            lineChart.update();
         }
+        
         inicializar();
     </script>
 </body>
