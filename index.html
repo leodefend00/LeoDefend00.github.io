@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configuración PWA y Logotipos Blindados -->
-    <link rel="manifest" href="manifest.json?v=22">
+    <link rel="manifest" href="manifest.json?v=23">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
@@ -56,16 +56,18 @@
             overflow: hidden;
         }
 
+        /* HEADER OPTIMIZADO PARA NO SOBRESALIR EN TLF */
         .header-row { 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 15px; gap: 5px; width: 100%;
+            margin-bottom: 15px; gap: 4px; width: 100%;
         }
         
         .month-select { 
             background: transparent; border: none; color: var(--accent); 
-            font-size: 1.4rem; font-weight: 850; text-transform: uppercase; 
+            font-size: 1.3rem; font-weight: 850; text-transform: uppercase; 
             outline: none; flex-grow: 1; letter-spacing: -1px;
-            max-width: 60%; text-overflow: ellipsis;
+            max-width: 45%; /* Reducido para dar espacio a los nuevos botones */
+            text-overflow: ellipsis;
         }
 
         .currency-toggle { 
@@ -74,17 +76,18 @@
         }
         
         .cur-btn { 
-            font-size: 0.55rem; padding: 5px 8px; border-radius: 9px; cursor: pointer; 
+            font-size: 0.55rem; padding: 5px 6px; border-radius: 9px; cursor: pointer; 
             font-weight: 800; color: var(--text); opacity: 0.3; 
         }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
         
         .header-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
-        .theme-btn { 
+        
+        .theme-btn, .refresh-btn { 
             background: var(--glass); border: 1px solid var(--glass-border); 
-            color: var(--text); width: 36px; height: 36px; border-radius: 50%; 
+            color: var(--text); width: 34px; height: 34px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+            cursor: pointer; font-size: 0.85rem; flex-shrink: 0;
         }
 
         .annual-summary {
@@ -175,7 +178,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v42.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v43.0</div>
         </div>
     </div>
 
@@ -187,6 +190,8 @@
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
             <div class="header-actions">
+                <!-- BOTÓN DE REFRESCO ELEGANTEMENTE INTEGRADO -->
+                <button class="refresh-btn" onclick="location.reload()" title="Refrescar">🔄</button>
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
         </div>
@@ -256,6 +261,13 @@
         ];
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
 
+        // --- SISTEMA DE NOTIFICACIÓN DINÁMICA ---
+        function enviarNotificacionCambio(titulo, cuerpo) {
+            if (Notification.permission === "granted") {
+                new Notification(titulo, { body: cuerpo, icon: "logo.png" });
+            }
+        }
+
         // --- GUÍA ---
         let currentStep = 0;
         const guideSteps = [
@@ -263,10 +275,10 @@
             { title: "Instalar como App 📱", icon: "📲", text: "Lleva tu gestión a otro nivel convirtiendo esta web en una App de escritorio o móvil sin ocupar espacio:", install: true },
             { title: "Gestión por Meses", icon: "📅", text: "La app se organiza por meses. Usa el selector superior para viajar en el tiempo. Cada mes es independiente, permitiéndote planificar el futuro o auditar el pasado con precisión." },
             { title: "Resumen Anual", icon: "🌍", text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero." },
-            { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)." },
+            { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro o el Modo Claro." },
             { title: "Divisas y Tasas", icon: "💰", text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real." },
             { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra.<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale.<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
-            { title: "Gráficos y Sobrante", icon: "📊", text: "Analiza tu **Dinero Sobrante** visualmente:<br><br>📊 **Barras:** Mira cuál registro pesa más.<br><br>🍩 **Dona:** Muestra tu **Sobrante Real** frente a tus gastos.<br><br>📈 **Salud del Bolsillo:** Rastrea si tu dinero sobrante crece mes a mes. El **Sobrante** es lo que te queda realmente libre tras cubrir gastos y ahorros." },
+            { title: "Gráficos y Sobrante", icon: "📊", text: "Analiza tu **Dinero Sobrante** visualmente:<br><br>📊 **Barras:** Mira cuál registro pesa más.<br><br>🍩 **Dona:** Muestra tu **Sobrante Real** frente a tus gastos.<br><br>📈 **Salud del Bolsillo:** Rastrea si tu dinero sobrante crece mes a mes." },
             { title: "Personalización Total", icon: "✨", text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán. ¡Es hora de empezar!" }
         ];
 
@@ -303,12 +315,9 @@
                 }).catch(() => {});
             });
 
-            // REFUERZO DE SINCRONIZACIÓN: Al volver a enfocar la aplicación de escritorio
             document.addEventListener('visibilitychange', () => {
                 if (document.visibilityState === 'visible') {
-                    // 1. Verificar actualización de código
                     navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
-                    // 2. Forzar refresco de datos desde LocalStorage (Para Sincronización Desktop <-> Web)
                     cargarDeLocal();
                     renderTodo();
                     actualizarCalculos();
@@ -317,12 +326,12 @@
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
         }
 
-        // Sincronización entre ventanas abiertas (tabs o ventanas independientes)
         window.addEventListener('storage', (e) => {
             if (e.key === STORAGE_KEY) {
                 cargarDeLocal();
                 renderTodo();
                 actualizarCalculos();
+                enviarNotificacionCambio("Sincronización Exitosa 🔄", "Los datos se han actualizado desde otro dispositivo.");
             }
         });
 
@@ -394,12 +403,36 @@
         }
 
         function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
-        function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); renderTodo(); actualizarCalculos(); }
+        
+        function agregarEntrada(tipo) { 
+            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; 
+            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; 
+            const label = tipo === 'ingresos' ? "Ingreso" : (tipo === 'gastos' ? "Gasto" : "Ahorro");
+            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); 
+            renderTodo(); 
+            actualizarCalculos();
+            enviarNotificacionCambio("Registro Creado 📂", `Se ha añadido un nuevo ${label} a tu lista.`);
+        }
+
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
         function renderLista(tipo, id) { 
             const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
             data.forEach((item, i) => { 
-                const div = document.createElement('div'); div.className = "entry-card"; div.innerHTML = `<div class="entry-row"><input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)"><input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)"><div class="amount-group"><input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)"><span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span></div><div class="amount-group" style="margin-left:5px;"><input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)"><span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span></div><span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span></div>`; lista.appendChild(div); 
+                const div = document.createElement('div'); div.className = "entry-card"; 
+                div.innerHTML = `<div class="entry-row">
+                    <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
+                    <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
+                    <div class="amount-group">
+                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)" onblur="enviarNotificacionCambio('Monto Actualizado ✅', 'El cambio ha sido guardado exitosamente.')">
+                        <span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
+                    </div>
+                    <div class="amount-group" style="margin-left:5px;">
+                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)" onblur="enviarNotificacionCambio('Monto Actualizado ✅', 'El cambio ha sido guardado exitosamente.')">
+                        <span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span>
+                    </div>
+                    <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
+                </div>`; 
+                lista.appendChild(div); 
             }); 
         }
 
@@ -413,7 +446,13 @@
         }
 
         function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = v; actualizarCalculos(); }
-        function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
+        
+        function borrar(t, idx) { 
+            registroAnual[mesActual][t].splice(idx, 1); 
+            renderTodo(); 
+            actualizarCalculos(); 
+            enviarNotificacionCambio("Registro Eliminado 🗑️", "La entrada ha sido removida de tu control mensual.");
+        }
 
         function actualizarCalculos() {
             const tVal = rates[tasaSeleccionada]; let totAnual = { ing: 0, gas: 0, aho: 0 };
@@ -430,7 +469,13 @@
             updateCharts(tIng, tGas, tAho, saldo, saldosMensuales); guardarEnLocal();
         }
 
-        function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
+        function toggleTheme() { 
+            document.body.classList.toggle('light-mode'); 
+            if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); 
+            initCharts(); actualizarCalculos(); 
+            enviarNotificacionCambio("Interfaz Actualizada 🌗", "Has cambiado el modo de visualización.");
+        }
+        
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
         
         function guardarEnLocal() { 
