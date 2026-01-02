@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=11">
+    <link rel="manifest" href="manifest.json?v=12">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Finance Master">
-    <link rel="apple-touch-icon" href="logo.png?v=11">
+    <link rel="apple-touch-icon" href="logo.png">
 
-    <title>Finance Elite Master - Custom Persistent</title>
+    <title>Finance Elite Master - Fluid Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -46,11 +45,9 @@
         .app-card {
             background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
             border: 1px solid var(--glass-border); border-radius: 35px;
-            width: 92%; max-width: 420px; 
-            /* Ajuste para evitar que se estire demasiado en pantallas largas */
-            padding: 22px 18px; margin: 10px auto;
+            width: 92%; max-width: 420px; padding: 22px 18px; margin: 10px auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            align-self: flex-start; /* Evita el estiramiento vertical forzado */
+            align-self: flex-start;
         }
 
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
@@ -78,7 +75,6 @@
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
         
-        /* Input de emoji editable */
         .emoji-input { 
             background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0;
             text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none;
@@ -145,18 +141,15 @@
     </div>
 
     <script>
-        // --- REGISTRO SEGURO DE SERVICE WORKER (FIX URL PROTOCOL) ---
+        // Registro Service Worker con protección de protocolo
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 if (window.location.protocol.startsWith('http')) {
-                    navigator.serviceWorker.register('sw.js')
-                        .then(reg => console.log("PWA Registrada"))
-                        .catch(err => console.warn("SW no registrado en este entorno"));
+                    navigator.serviceWorker.register('sw.js').catch(err => console.warn("SW Offline Mode"));
                 }
             });
         }
 
-        // --- REGLA DE PERSISTENCIA MAESTRA ---
         const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
         const OLD_KEYS = ['FINANCE_ELITE_DATA_FINAL', 'FINANCE_MASTER_PRO_V33', 'FINANCE_MASTER_PERMANENT_DATA'];
 
@@ -222,17 +215,17 @@
             data.forEach((item, i) => { 
                 const div = document.createElement('div'); 
                 div.className = "entry-card"; 
+                // Cada input tiene un ID único para poder actualizarlo sin re-renderizar toda la lista
                 div.innerHTML = `<div class="entry-row">
-                    <!-- Input de emoji ahora es parte de la data editable -->
                     <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
                     <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
                     <div class="amount-group">
                         <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
-                        <span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span>
+                        <span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
                     </div>
                     <div class="amount-group" style="margin-left:5px;">
                         <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
-                        <span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span>
+                        <span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span>
                     </div>
                     <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
                 </div>`; 
@@ -240,19 +233,33 @@
             }); 
         }
 
+        // SOLUCIÓN AL FOCO: La función sync ahora actualiza solo los valores necesarios, NO redibuja la lista
         function sync(tipo, idx, origen, valor) { 
             const tVal = rates[tasaSeleccionada]; 
             const item = registroAnual[mesActual][tipo][idx]; 
             const num = parseFloat(valor) || 0; 
+            
             if (origen === 'bs') { 
-                item.bs = num; item.usd = (num / tVal).toFixed(2); 
-                document.getElementById(`${tipo}-usd-${idx}`).value = item.usd; 
+                item.bs = num; 
+                item.usd = (num / tVal).toFixed(2); 
+                // Actualizamos el input de USD directamente sin re-renderizar
+                const targetInput = document.getElementById(`${tipo}-usd-${idx}`);
+                if (targetInput) targetInput.value = item.usd;
             } else { 
-                item.usd = num; item.bs = (num * tVal).toFixed(2); 
-                document.getElementById(`${tipo}-bs-${idx}`).value = item.bs; 
+                item.usd = num; 
+                item.bs = (num * tVal).toFixed(2); 
+                // Actualizamos el input de Bs directamente sin re-renderizar
+                const targetInput = document.getElementById(`${tipo}-bs-${idx}`);
+                if (targetInput) targetInput.value = item.bs;
             } 
+
+            // Actualizamos solo las etiquetas de ayuda ($ / Bs)
+            const labelUsd = document.getElementById(`${tipo}-label-usd-${idx}`);
+            const labelBs = document.getElementById(`${tipo}-label-bs-${idx}`);
+            if(labelUsd) labelUsd.innerText = `$ ${(item.bs/tVal).toFixed(2)}`;
+            if(labelBs) labelBs.innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
+
             actualizarCalculos(); 
-            renderTodo(); 
         }
 
         function editar(t, idx, c, v) { 
@@ -284,9 +291,8 @@
             const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const saldo = tIng - tGas - tAho;
 
-            const elBs = document.getElementById('total-bs');
-            elBs.innerText = `Bs ${fmtFull.format(saldo)}`;
-            elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
+            document.getElementById('total-bs').innerText = `Bs ${fmtFull.format(saldo)}`;
+            document.getElementById('total-bs').style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
             document.getElementById('total-usd').innerText = `$ ${(saldo / tVal).toFixed(2)}`;
 
             updateCharts(tIng, tGas, tAho, saldo);
@@ -334,16 +340,10 @@
 
         function updateCharts(ing, gas, aho, sal) { 
             const barLabels = []; const barData = []; const barColors = []; 
-            // Los gráficos ahora usan los emojis personalizados
             (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(`${i.icono || '💼'} ${i.desc.substring(0,4)}`); barData.push(i.bs); barColors.push('#2ecc71'); }); 
             (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(`${g.icono || '🛒'} ${g.desc.substring(0,4)}`); barData.push(g.bs); barColors.push('#e74c3c'); }); 
             (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
-            
-            barChart.data.labels = barLabels; 
-            barChart.data.datasets[0].data = barData; 
-            barChart.data.datasets[0].backgroundColor = barColors; 
-            barChart.update(); 
-
+            barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
             const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
             if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
             doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
