@@ -174,7 +174,6 @@
             </div>
 
             <div class="header-actions">
-                <!-- Botón de información eliminado por solicitud -->
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
         </div>
@@ -276,9 +275,9 @@
                         <h3>${step.icon} ${step.title}</h3>
                         <p>${step.text}</p>
                         <ul class="install-step-list">
-                            <li><span class="step-badge">1</span> <b>iPhone:</b> Toca el icono de Compartir (cuadrado con flecha) y selecciona <b>"Agregar al inicio"</b>.</li>
-                            <li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos verticales del navegador y elige <b>"Instalar aplicación"</b>.</li>
-                            <li><span class="step-badge">3</span> <b>PC/Escritorio:</b> En la barra de direcciones verás un icono de pantalla con una flecha. Toca <b>"Instalar"</b>.</li>
+                            <li><span class="step-badge">1</span> <b>iPhone:</b> Toca el icono de Compartir y selecciona <b>"Agregar al inicio"</b>.</li>
+                            <li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos del navegador y elige <b>"Instalar aplicación"</b>.</li>
+                            <li><span class="step-badge">3</span> <b>PC:</b> En la barra de direcciones verás un icono de pantalla. Toca <b>"Instalar"</b>.</li>
                         </ul>
                     </div>
                 `;
@@ -296,12 +295,15 @@
             btnNext.innerText = currentStep === guideSteps.length - 1 ? 'EMPEZAR AHORA' : 'SIGUIENTE';
         }
 
+        // --- SOLUCIÓN PERMISOS: Se pide permiso en cada clic de la guía para asegurar "Gesto del Usuario" ---
         function changeStep(delta) {
+            solicitarPermisoAutomatico(); // Intenta disparar el permiso oficial
             currentStep += delta;
             if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); }
         }
 
         function finishGuide() {
+            solicitarPermisoAutomatico(); // Último intento al finalizar
             document.getElementById('guide').style.display = 'none';
             localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true');
         }
@@ -366,13 +368,12 @@
                 document.getElementById('guide').style.display = 'block';
             }
             
-            solicitarPermisoAutomatico();
-            verificarNotificacionesSemanales(); 
             setInterval(getRates, 300000);
         }
 
         function solicitarPermisoAutomatico() {
             if (!("Notification" in window)) return;
+            // Solo se pide si el estado es 'default' (sin decidir)
             if (Notification.permission === "default") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
@@ -518,6 +519,7 @@
                 notifActivas = obj.notifActivas || false;
                 ultimaNotifDate = obj.ultimaNotifDate || null;
                 setMonedaAnual(monedaAnual); 
+                verificarNotificacionesSemanales(); // Solo si ya estaban activas
             } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } 
         }
 
