@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configuración PWA y Logotipos -->
-    <link rel="manifest" href="manifest.json?v=20">
+    <link rel="manifest" href="manifest.json?v=21">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
@@ -119,6 +119,7 @@
         .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
         
         .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+        .sobrante-label { display: block; font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; }
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
 
@@ -174,7 +175,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v40.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v41.0</div>
         </div>
     </div>
 
@@ -214,6 +215,7 @@
         <button class="add-btn" onclick="agregarEntrada('ahorros')">+ Nuevo Ahorro</button>
 
         <div class="balance-section">
+            <span class="sobrante-label" style="color: var(--col-ing);">DINERO SOBRANTE</span>
             <span id="total-bs">Bs 0,00</span>
             <span id="total-usd">$ 0.00</span>
         </div>
@@ -229,12 +231,12 @@
         </div>
         
         <div class="chart-box" style="height: 220px;">
-            <span class="chart-label">¿En qué se va tu dinero?</span>
+            <span class="chart-label">Análisis de Capital</span>
             <canvas id="doughnutChart"></canvas>
         </div>
 
         <div class="chart-box" style="height: 220px; margin-bottom: 25px;">
-            <span class="chart-label">¿Cómo va tu bolsillo este año?</span>
+            <span class="chart-label">Salud del Bolsillo (Sobrante Anual)</span>
             <canvas id="lineChart"></canvas>
         </div>
     </div>
@@ -264,7 +266,7 @@
             { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)." },
             { title: "Divisas y Tasas", icon: "💰", text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real." },
             { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra.<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale.<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
-            { title: "Gráficos de Inteligencia", icon: "📊", text: "Analiza tu dinero visualmente:<br><br>📊 **Barras:** Cuál registro pesa más.<br><br>🍩 **Dona:** Porcentaje de ingresos realmente **Libre**.<br><br>📈 **Salud del Bolsillo:** Si la línea está arriba y en verde, ¡felicidades! Si baja al rojo, revisa tus gastos." },
+            { title: "Gráficos y Sobrante", icon: "📊", text: "Analiza tu **Dinero Sobrante** visualmente:<br><br>📊 **Barras:** Mira cuál registro pesa más.<br><br>🍩 **Dona:** Muestra tu **Sobrante Real** frente a tus gastos.<br><br>📈 **Salud del Bolsillo:** Rastrea si tu dinero sobrante crece mes a mes. El **Sobrante** es lo que te queda realmente libre tras cubrir gastos y ahorros." },
             { title: "Personalización Total", icon: "✨", text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán. ¡Es hora de empezar!" }
         ];
 
@@ -287,7 +289,7 @@
         function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
         function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
-        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN (FIX DESKTOP SYNC) ---
+        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN ---
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
@@ -304,7 +306,6 @@
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
         }
 
-        // --- LISTENER DE SINCRONIZACIÓN ENTRE VENTANAS (WEB <-> DESKTOP) ---
         window.addEventListener('storage', (e) => {
             if (e.key === STORAGE_KEY) {
                 cargarDeLocal();
@@ -419,10 +420,7 @@
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
-        
-        function guardarEnLocal() { 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); 
-        }
+        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
 
         function cargarDeLocal() { 
             let store = localStorage.getItem(STORAGE_KEY);
@@ -445,7 +443,7 @@
             (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
             barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
             const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
-            if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
+            if (sal > 0) { dLabels.push("Sobrante"); dData.push(sal); dCols.push("#2ecc71"); } 
             doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
             const currentIdx = meses.indexOf(mesActual);
             lineChart.data.datasets[0].data = saldosAnuales;
