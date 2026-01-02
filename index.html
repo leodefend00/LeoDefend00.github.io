@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Configuración PWA y Logotipos Blindados -->
-    <link rel="manifest" href="manifest.json?v=23">
+    <!-- Configuración PWA y Logotipos Blindados para Android e iOS -->
+    <link rel="manifest" href="manifest.json?v=24">
+    <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="shortcut icon" href="logo.png">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Finance Elite">
 
-    <title>Finance Elite Master - Precision Sync</title>
+    <title>Finance Elite Master - Universal Sync</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -56,7 +58,6 @@
             overflow: hidden;
         }
 
-        /* HEADER OPTIMIZADO PARA NO SOBRESALIR EN TLF */
         .header-row { 
             display: flex; justify-content: space-between; align-items: center; 
             margin-bottom: 15px; gap: 4px; width: 100%;
@@ -66,8 +67,7 @@
             background: transparent; border: none; color: var(--accent); 
             font-size: 1.3rem; font-weight: 850; text-transform: uppercase; 
             outline: none; flex-grow: 1; letter-spacing: -1px;
-            max-width: 45%; /* Reducido para dar espacio a los nuevos botones */
-            text-overflow: ellipsis;
+            max-width: 45%; text-overflow: ellipsis;
         }
 
         .currency-toggle { 
@@ -178,7 +178,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v43.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v44.0</div>
         </div>
     </div>
 
@@ -190,7 +190,6 @@
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
             <div class="header-actions">
-                <!-- BOTÓN DE REFRESCO ELEGANTEMENTE INTEGRADO -->
                 <button class="refresh-btn" onclick="location.reload()" title="Refrescar">🔄</button>
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
@@ -247,7 +246,17 @@
     </div>
 
     <script>
-        // --- CONSEJOS ---
+        // --- CANAL DE COMUNICACIÓN MAESTRA (INTER-TAB SYNC) ---
+        const syncChannel = new BroadcastChannel('finance_sync_channel');
+        syncChannel.onmessage = (event) => {
+            if (event.data === 'sync_required') {
+                cargarDeLocal();
+                renderTodo();
+                actualizarCalculos();
+                console.log("Sincronización de canal completada.");
+            }
+        };
+
         const tips = [
             "Si te sobra dinero, prioriza un fondo de emergencia de al menos 3 meses.",
             "Invierte el sobrante en activos que generen dividendos o rentas.",
@@ -261,14 +270,14 @@
         ];
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
 
-        // --- SISTEMA DE NOTIFICACIÓN DINÁMICA ---
         function enviarNotificacionCambio(titulo, cuerpo) {
             if (Notification.permission === "granted") {
                 new Notification(titulo, { body: cuerpo, icon: "logo.png" });
             }
+            // Enviar señal a otras ventanas
+            syncChannel.postMessage('sync_required');
         }
 
-        // --- GUÍA ---
         let currentStep = 0;
         const guideSteps = [
             { title: "Bienvenido", icon: "💼", text: "Finance Elite Master es tu estación de control patrimonial. Está diseñada para darte claridad absoluta sobre tu dinero en el entorno económico actual. Vamos a enseñarte cómo dominarla." },
@@ -301,7 +310,6 @@
         function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
         function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
-        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN MAESTRA ---
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
@@ -321,6 +329,7 @@
                     cargarDeLocal();
                     renderTodo();
                     actualizarCalculos();
+                    console.log("Foco recuperado: Sincronizando datos...");
                 }
             });
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
