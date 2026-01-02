@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=18">
+    <link rel="manifest" href="manifest.json?v=19">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
 
-    <title>Finance Elite Master - Fluid Edition</title>
+    <title>Finance Elite Master - Mobile Precision</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -31,6 +31,7 @@
             --bg-color: #ffffff;
         }
 
+        /* Reset y Prevención de Desbordamiento */
         * { box-sizing: border-box; transition: background 0.3s, color 0.3s, border-color 0.3s; -webkit-tap-highlight-color: transparent; }
 
         body {
@@ -49,17 +50,48 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             align-self: flex-start;
             position: relative;
+            overflow: hidden; /* Garantiza que nada salga de la tarjeta */
         }
 
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
-        .month-select { background: transparent; border: none; color: var(--accent); font-size: 1.5rem; font-weight: 800; text-transform: uppercase; outline: none; flex-grow: 1; letter-spacing: -0.5px; }
-        .currency-toggle { display: flex; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 3px; gap: 3px; }
-        .cur-btn { font-size: 0.6rem; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-weight: 800; color: var(--text); opacity: 0.3; }
+        /* HEADER OPTIMIZADO PARA NO SOBRESALIR */
+        .header-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            gap: 5px; 
+            width: 100%;
+        }
+        
+        .month-select { 
+            background: transparent; border: none; color: var(--accent); 
+            font-size: 1.4rem; font-weight: 850; text-transform: uppercase; 
+            outline: none; flex-grow: 1; letter-spacing: -1px;
+            max-width: 60%; /* Evita que el nombre del mes empuje los botones fuera */
+            text-overflow: ellipsis;
+        }
+
+        .currency-toggle { 
+            display: flex; background: var(--glass); border: 1px solid var(--glass-border); 
+            border-radius: 12px; padding: 2px; gap: 2px; flex-shrink: 0;
+        }
+        
+        .cur-btn { 
+            font-size: 0.55rem; padding: 5px 8px; border-radius: 9px; cursor: pointer; 
+            font-weight: 800; color: var(--text); opacity: 0.3; 
+        }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
         
-        .header-actions { display: flex; gap: 8px; align-items: center; }
-        .theme-btn, .info-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; }
+        .header-actions { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
+        
+        .theme-btn { 
+            background: var(--glass); border: 1px solid var(--glass-border); 
+            color: var(--text); width: 36px; height: 36px; border-radius: 50%; 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
+        }
 
+        /* Contenedores de información */
         .annual-summary {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
             border-radius: 22px; padding: 18px; margin-bottom: 20px;
@@ -74,6 +106,7 @@
         .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
 
+        /* Listas y Entradas */
         .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
@@ -96,7 +129,7 @@
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
 
-        /* SECCIÓN DE CONSEJOS DINÁMICOS */
+        /* Inteligencia Financiera */
         .tip-box {
             background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2);
             padding: 15px; border-radius: 22px; margin-top: 25px;
@@ -107,7 +140,7 @@
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
         .chart-label { font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
 
-        /* ESTILOS DE LA GUÍA INTERACTIVA */
+        /* Guía Interactiva */
         .guide-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.92); backdrop-filter: blur(20px);
@@ -118,32 +151,21 @@
         .guide-header { margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; position: relative; }
         .guide-title { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
         .guide-step-counter { font-size: 0.65rem; font-weight: 800; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; }
-        
         .guide-close-x {
             position: absolute; top: -10px; right: 0; width: 35px; height: 35px;
             background: rgba(255,255,255,0.1); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1rem; cursor: pointer; opacity: 0.6; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer;
         }
-        .guide-close-x:active { transform: scale(0.9); opacity: 1; }
-
         .guide-body { min-height: 220px; display: flex; flex-direction: column; justify-content: center; }
-        
         .guide-section { margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
         .guide-section h3 { font-size: 1.2rem; margin-top: 0; color: var(--col-aho); display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .guide-section p { font-size: 0.92rem; opacity: 0.85; line-height: 1.7; margin-bottom: 0; }
-        
         .install-step-list { list-style: none; padding: 0; margin-top: 15px; }
         .install-step-list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; font-size: 0.85rem; opacity: 0.9; }
         .step-badge { background: var(--accent); color: #000; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.7rem; }
-
         .guide-footer { display: flex; gap: 10px; margin-top: 20px; }
-        .guide-btn { 
-            flex: 1; padding: 15px; border-radius: 18px; font-weight: 800; 
-            font-size: 0.9rem; cursor: pointer; border: none; transition: 0.2s;
-        }
+        .guide-btn { flex: 1; padding: 15px; border-radius: 18px; font-weight: 800; font-size: 0.9rem; cursor: pointer; border: none; transition: 0.2s; }
         .btn-next { background: var(--col-aho); color: #000; }
-        .btn-next:active { transform: scale(0.98); }
         .btn-prev { background: rgba(255,255,255,0.1); color: #fff; }
     </style>
 </head>
@@ -168,7 +190,7 @@
             </div>
             
             <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">
-                FINANCE ELITE MASTER v38.0
+                FINANCE ELITE MASTER v39.0
             </div>
         </div>
     </div>
@@ -183,7 +205,7 @@
             </div>
 
             <div class="header-actions">
-                <button class="info-btn" onclick="openGuide()">ℹ️</button>
+                <!-- Solo el botón de tema para evitar sobrecarga visual -->
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
         </div>
@@ -216,7 +238,6 @@
             <span id="total-usd">$ 0.00</span>
         </div>
 
-        <!-- CONSEJO DEL MAESTRO DINÁMICO -->
         <div class="tip-box">
             <h4>💡 TIP PARA TU SOBRANTE</h4>
             <p id="dynamic-tip">Cargando sabiduría financiera...</p>
@@ -239,7 +260,7 @@
     </div>
 
     <script>
-        // --- BASE DE DATOS DE CONSEJOS (INTELIGENCIA FINANCIERA) ---
+        // --- CONSEJOS ---
         const tips = [
             "Si te sobra dinero, prioriza un fondo de emergencia de al menos 3 meses.",
             "Invierte el sobrante en activos que generen dividendos o rentas.",
@@ -251,59 +272,20 @@
             "El mejor momento para ahorrar fue ayer, el segundo mejor es con este sobrante.",
             "Evita deudas de consumo; si te sobra dinero, paga primero tus créditos pendientes."
         ];
-
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
 
-        // --- MOTOR DE LA GUÍA INTERACTIVA ---
+        // --- GUÍA ---
         let currentStep = 0;
         const guideSteps = [
-            {
-                title: "Bienvenido",
-                icon: "💼",
-                text: "Finance Elite Master es tu estación de control patrimonial. Está diseñada para darte claridad absoluta sobre tu dinero en el entorno económico actual. Vamos a enseñarte cómo dominarla."
-            },
-            {
-                title: "Instalar como App 📱",
-                icon: "📲",
-                text: "Lleva tu gestión a otro nivel convirtiendo esta web en una App de escritorio o móvil sin ocupar espacio:",
-                install: true
-            },
-            {
-                title: "Gestión por Meses",
-                icon: "📅",
-                text: "La app se organiza por meses. Usa el selector superior para viajar en el tiempo. Cada mes es independiente, permitiéndote planificar el futuro o auditar el pasado con precisión."
-            },
-            {
-                title: "Resumen Anual",
-                icon: "🌍",
-                text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero."
-            },
-            {
-                title: "Temas y Colores",
-                icon: "🎨",
-                text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)."
-            },
-            {
-                title: "Divisas y Tasas",
-                icon: "💰",
-                text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real."
-            },
-            {
-                title: "Categorías de Tipo",
-                icon: "📂",
-                text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra (Sueldos, ventas).<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale (Comida, servicios).<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.",
-                isCategory: true
-            },
-            {
-                title: "Gráficos de Inteligencia",
-                icon: "📊",
-                text: "Analiza tu dinero de forma visual y simple:<br><br>📊 **Barras:** Mira cuál registro pesa más.<br><br>🍩 **Dona:** Mira cuánto porcentaje de tus ingresos te queda realmente **Libre**.<br><br>📈 **Salud del Bolsillo:** Mira la línea del dinero que te sobra cada mes. Si está arriba y en verde, ¡felicidades! Si baja al rojo, es hora de ajustar gastos."
-            },
-            {
-                title: "Personalización Total",
-                icon: "✨",
-                text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán al actualizar la app. ¡Es hora de empezar!"
-            }
+            { title: "Bienvenido", icon: "💼", text: "Finance Elite Master es tu estación de control patrimonial. Está diseñada para darte claridad absoluta sobre tu dinero en el entorno económico actual. Vamos a enseñarte cómo dominarla." },
+            { title: "Instalar como App 📱", icon: "📲", text: "Lleva tu gestión a otro nivel convirtiendo esta web en una App de escritorio o móvil sin ocupar espacio:", install: true },
+            { title: "Gestión por Meses", icon: "📅", text: "La app se organiza por meses. Usa el selector superior para viajar en el tiempo. Cada mes es independiente, permitiéndote planificar el futuro o auditar el pasado con precisión." },
+            { title: "Resumen Anual", icon: "🌍", text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero." },
+            { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)." },
+            { title: "Divisas y Tasas", icon: "💰", text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real." },
+            { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra (Sueldos, ventas).<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale (Comida, servicios).<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
+            { title: "Gráficos de Inteligencia", icon: "📊", text: "Analiza tu dinero visualmente:<br><br>📊 **Barras:** Cuál registro pesa más.<br><br>🍩 **Dona:** Porcentaje de ingresos realmente **Libre**.<br><br>📈 **Salud del Bolsillo:** Si la línea está arriba y en verde, ¡felicidades! Si baja al rojo, revisa tus gastos." },
+            { title: "Personalización Total", icon: "✨", text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán. ¡Es hora de empezar!" }
         ];
 
         function renderGuideStep() {
@@ -314,24 +296,9 @@
             const btnNext = document.getElementById('btn-next');
 
             if (step.install) {
-                body.innerHTML = `
-                    <div class="guide-section">
-                        <h3>${step.icon} ${step.title}</h3>
-                        <p>${step.text}</p>
-                        <ul class="install-step-list">
-                            <li><span class="step-badge">1</span> <b>iPhone:</b> Toca "Compartir" y selecciona <b>"Agregar al inicio"</b>.</li>
-                            <li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos y elige <b>"Instalar aplicación"</b>.</li>
-                            <li><span class="step-badge">3</span> <b>PC:</b> Toca el icono de pantalla en la barra de búsqueda y dale a <b>"Instalar"</b>.</li>
-                        </ul>
-                    </div>
-                `;
+                body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p><ul class="install-step-list"><li><span class="step-badge">1</span> <b>iPhone:</b> Toca "Compartir" y selecciona <b>"Agregar al inicio"</b>.</li><li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos y elige <b>"Instalar aplicación"</b>.</li><li><span class="step-badge">3</span> <b>PC:</b> Dale a <b>"Instalar"</b> en la barra de direcciones.</li></ul></div>`;
             } else {
-                body.innerHTML = `
-                    <div class="guide-section">
-                        <h3>${step.icon} ${step.title}</h3>
-                        <p>${step.text}</p>
-                    </div>
-                `;
+                body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p></div>`;
             }
 
             counter.innerText = `PASO ${currentStep + 1} DE ${guideSteps.length}`;
@@ -339,46 +306,24 @@
             btnNext.innerText = currentStep === guideSteps.length - 1 ? 'EMPEZAR AHORA' : 'SIGUIENTE';
         }
 
-        function changeStep(delta) {
-            solicitarPermisoAutomatico();
-            currentStep += delta;
-            if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); }
-        }
+        function changeStep(delta) { solicitarPermisoAutomatico(); currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
+        function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
+        function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
-        function finishGuide() {
-            solicitarPermisoAutomatico();
-            document.getElementById('guide').style.display = 'none';
-            localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true');
-        }
-
-        function openGuide() {
-            currentStep = 0;
-            renderGuideStep();
-            document.getElementById('guide').style.display = 'block';
-        }
-
-        // --- SISTEMA DE ACTUALIZACIÓN FORZADA ---
-        if ('serviceWorker' in navigator) {
+        // --- SERVICE WORKER & SYNC (FIX SECURITY ERROR) ---
+        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
-                if (window.location.protocol.startsWith('http')) {
-                    navigator.serviceWorker.register('sw.js').then(reg => {
-                        reg.update();
-                        reg.addEventListener('updatefound', () => {
-                            const newWorker = reg.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    window.location.reload();
-                                }
-                            });
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    try { reg.update(); } catch(e) {}
+                    reg.addEventListener('updatefound', () => {
+                        const newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) { window.location.reload(); }
                         });
                     });
-                }
+                }).catch(() => {});
             });
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
-                }
-            });
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); }); } });
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
         }
 
@@ -403,17 +348,13 @@
             const selector = document.getElementById('selector-mes');
             meses.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); selector.appendChild(o); });
             selector.value = mesActual;
-            
-            // Mostrar consejo dinámico
             document.getElementById('dynamic-tip').innerText = selectedTip;
-
             await getRates();
             initCharts();
             cargarDeLocal();
             renderTodo();
             actualizarCalculos();
-            const guideSeen = localStorage.getItem('GUIDE_MAESTRA_SEEN');
-            if (!guideSeen) { renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
+            if (!localStorage.getItem('GUIDE_MAESTRA_SEEN')) { renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
             setInterval(getRates, 300000);
         }
 
@@ -422,35 +363,25 @@
             if (Notification.permission === "default") {
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
-                        notifActivas = true;
-                        ultimaNotifDate = Date.now();
-                        new Notification("¡Consejo Activado!", { body: selectedTip, icon: "logo.png" });
+                        notifActivas = true; ultimaNotifDate = Date.now();
+                        new Notification("¡Activado!", { body: selectedTip, icon: "logo.png" });
                         guardarEnLocal();
                     }
                 });
-            } else if (Notification.permission === "granted" && !notifActivas) {
-                notifActivas = true; guardarEnLocal();
-            }
+            } else if (Notification.permission === "granted" && !notifActivas) { notifActivas = true; guardarEnLocal(); }
         }
 
         function verificarNotificacionesSemanales() {
             if (!notifActivas || Notification.permission !== "granted") return;
-            const ahora = Date.now();
             const unaSemanaMs = 7 * 24 * 60 * 60 * 1000;
-            if (!ultimaNotifDate || (ahora - ultimaNotifDate) > unaSemanaMs) {
-                new Notification("Recordatorio Semanal 📉", { body: `No olvides tus gastos. Tip: ${selectedTip}`, icon: "logo.png" });
-                ultimaNotifDate = ahora;
+            if (!ultimaNotifDate || (Date.now() - ultimaNotifDate) > unaSemanaMs) {
+                new Notification("Recordatorio 📉", { body: `Registra tus gastos. Tip: ${selectedTip}`, icon: "logo.png" });
+                ultimaNotifDate = Date.now();
                 guardarEnLocal();
             }
         }
 
-        function setMonedaAnual(m) {
-            monedaAnual = m;
-            document.getElementById('cur-bs').classList.toggle('active', m === 'bs');
-            document.getElementById('cur-usd').classList.toggle('active', m === 'usd');
-            actualizarCalculos();
-        }
-
+        function setMonedaAnual(m) { monedaAnual = m; document.getElementById('cur-bs').classList.toggle('active', m === 'bs'); document.getElementById('cur-usd').classList.toggle('active', m === 'usd'); actualizarCalculos(); }
         async function getRates() {
             try {
                 const r = await fetch('https://ve.dolarapi.com/v1/dolares');
@@ -460,62 +391,25 @@
                 document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2);
                 document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2);
                 actualizarCalculos();
-            } catch (e) { console.warn("Offline"); }
+            } catch (e) {}
         }
 
         function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
-        
-        function agregarEntrada(tipo) { 
-            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; 
-            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; 
-            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); 
-            renderTodo(); 
-            actualizarCalculos();
-        }
-
+        function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); renderTodo(); actualizarCalculos(); }
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
-
         function renderLista(tipo, id) { 
-            const lista = document.getElementById(id); lista.innerHTML = ""; 
-            const tVal = rates[tasaSeleccionada]; 
-            const data = registroAnual[mesActual][tipo] || []; 
+            const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
             data.forEach((item, i) => { 
-                const div = document.createElement('div'); 
-                div.className = "entry-card"; 
-                div.innerHTML = `<div class="entry-row">
-                    <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
-                    <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
-                    <div class="amount-group">
-                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
-                        <span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
-                    </div>
-                    <div class="amount-group" style="margin-left:5px;">
-                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
-                        <span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span>
-                    </div>
-                    <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
-                </div>`; 
-                lista.appendChild(div); 
+                const div = document.createElement('div'); div.className = "entry-card"; div.innerHTML = `<div class="entry-row"><input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)"><input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)"><div class="amount-group"><input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)"><span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span></div><div class="amount-group" style="margin-left:5px;"><input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)"><span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span></div><span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span></div>`; lista.appendChild(div); 
             }); 
         }
 
         function sync(tipo, idx, origen, valor) { 
-            const tVal = rates[tasaSeleccionada]; 
-            const item = registroAnual[mesActual][tipo][idx]; 
-            const num = parseFloat(valor) || 0; 
-            if (origen === 'bs') { 
-                item.bs = num; item.usd = (num / tVal).toFixed(2); 
-                const targetInput = document.getElementById(`${tipo}-usd-${idx}`);
-                if (targetInput) targetInput.value = item.usd;
-            } else { 
-                item.usd = num; item.bs = (num * tVal).toFixed(2); 
-                const targetInput = document.getElementById(`${tipo}-bs-${idx}`);
-                if (targetInput) targetInput.value = item.bs;
-            } 
-            const labelUsd = document.getElementById(`${tipo}-label-usd-${idx}`);
-            const labelBs = document.getElementById(`${tipo}-label-bs-${idx}`);
-            if(labelUsd) labelUsd.innerText = `$ ${(item.bs/tVal).toFixed(2)}`;
-            if(labelBs) labelBs.innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
+            const tVal = rates[tasaSeleccionada]; const item = registroAnual[mesActual][tipo][idx]; const num = parseFloat(valor) || 0; 
+            if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); const targetInput = document.getElementById(`${tipo}-usd-${idx}`); if (targetInput) targetInput.value = item.usd; } 
+            else { item.usd = num; item.bs = (num * tVal).toFixed(2); const targetInput = document.getElementById(`${tipo}-bs-${idx}`); if (targetInput) targetInput.value = item.bs; } 
+            const labelUsd = document.getElementById(`${tipo}-label-usd-${idx}`); const labelBs = document.getElementById(`${tipo}-label-bs-${idx}`);
+            if(labelUsd) labelUsd.innerText = `$ ${(item.bs/tVal).toFixed(2)}`; if(labelBs) labelBs.innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
             actualizarCalculos(); 
         }
 
@@ -523,42 +417,18 @@
         function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
 
         function actualizarCalculos() {
-            const tVal = rates[tasaSeleccionada];
-            let totAnual = { ing: 0, gas: 0, aho: 0 };
-            
-            const saldosMensuales = meses.map(m => {
-                if (!registroAnual[m]) return 0;
-                const i = (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                const g = (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                const a = (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                return i - g - a;
-            });
-
-            meses.forEach(m => {
-                if (registroAnual[m]) {
-                    totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                    totAnual.gas += (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                    totAnual.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-                }
-            });
-
+            const tVal = rates[tasaSeleccionada]; let totAnual = { ing: 0, gas: 0, aho: 0 };
+            const saldosMensuales = meses.map(m => { if (!registroAnual[m]) return 0; const i = (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const g = (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const a = (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); return i - g - a; });
+            meses.forEach(m => { if (registroAnual[m]) { totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); totAnual.gas += (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); totAnual.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); } });
             const format = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
-            document.getElementById('ann-ing').innerText = format(totAnual.ing);
-            document.getElementById('ann-gas').innerText = format(totAnual.gas);
-            document.getElementById('ann-aho').innerText = format(totAnual.aho);
-
+            document.getElementById('ann-ing').innerText = format(totAnual.ing); document.getElementById('ann-gas').innerText = format(totAnual.gas); document.getElementById('ann-aho').innerText = format(totAnual.aho);
             const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const saldo = tIng - tGas - tAho;
-
-            const elBs = document.getElementById('total-bs');
-            elBs.innerText = `Bs ${fmtFull.format(saldo)}`;
-            elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
+            const elBs = document.getElementById('total-bs'); elBs.innerText = `Bs ${fmtFull.format(saldo)}`; elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
             document.getElementById('total-usd').innerText = `$ ${(saldo / tVal).toFixed(2)}`;
-            
-            updateCharts(tIng, tGas, tAho, saldo, saldosMensuales);
-            guardarEnLocal();
+            updateCharts(tIng, tGas, tAho, saldo, saldosMensuales); guardarEnLocal();
         }
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
@@ -568,17 +438,8 @@
         function cargarDeLocal() { 
             let store = localStorage.getItem(STORAGE_KEY);
             if (!store) { for (let key of OLD_KEYS) { let oldData = localStorage.getItem(key); if (oldData) { store = oldData; break; } } }
-            if (store) { 
-                const obj = JSON.parse(store); 
-                registroAnual = obj.data || {}; 
-                mesActual = obj.mes || mesActual; 
-                tasaSeleccionada = obj.tasa || 'bcv'; 
-                monedaAnual = obj.curAnual || 'bs'; 
-                notifActivas = obj.notifActivas || false;
-                ultimaNotifDate = obj.ultimaNotifDate || null;
-                setMonedaAnual(monedaAnual); 
-                verificarNotificacionesSemanales();
-            } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } 
+            if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; notifActivas = obj.notifActivas || false; ultimaNotifDate = obj.ultimaNotifDate || null; setMonedaAnual(monedaAnual); } 
+            else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } 
         }
 
         function initCharts() { 
@@ -594,17 +455,11 @@
             (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(`${g.icono || '🛒'} ${g.desc.substring(0,4)}`); barData.push(g.bs); barColors.push('#e74c3c'); }); 
             (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
             barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
-            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
-            if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
+            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
             doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
-            const currentIdx = meses.indexOf(mesActual);
-            lineChart.data.datasets[0].data = saldosAnuales;
-            const currentVal = saldosAnuales[currentIdx];
-            lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
-            lineChart.data.datasets[0].pointBorderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
-            lineChart.update();
+            const currentIdx = meses.indexOf(mesActual); lineChart.data.datasets[0].data = saldosAnuales;
+            const currentVal = saldosAnuales[currentIdx]; lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c'; lineChart.data.datasets[0].pointBorderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c'; lineChart.update();
         }
-        
         inicializar();
     </script>
 </body>
