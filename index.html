@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=5">
+    <link rel="manifest" href="manifest.json?v=7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="logo.png?v=5">
+    <link rel="apple-touch-icon" href="logo.png">
 
-    <title>Finance Elite Master - Dual Mode</title>
+    <title>Finance Elite Master</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -31,13 +31,15 @@
             --bg-color: #ffffff;
         }
 
-        * { box-sizing: border-box; transition: all 0.3s ease; }
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; }
 
         body {
             background: var(--bg-color); color: var(--text); 
             font-family: 'Inter', -apple-system, sans-serif;
             display: flex; justify-content: center; margin: 0; min-height: 100vh;
-            padding-top: env(safe-area-inset-top, 20px);
+            overflow-x: hidden;
+            /* AJUSTE PARA EL NOTCH (Isla Dinámica) */
+            padding-top: calc(env(safe-area-inset-top) + 15px);
             padding-bottom: env(safe-area-inset-bottom, 20px);
         }
 
@@ -47,46 +49,66 @@
             width: 95%; max-width: 440px; padding: 20px 15px; margin: 10px auto;
         }
 
-        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .month-select { background: transparent; border: none; color: var(--accent); font-size: 1.4rem; font-weight: 700; text-transform: uppercase; outline: none; flex-grow: 1; }
+        /* HEADER CORREGIDO: Mes + Moneda + Tema */
+        .header-row { 
+            display: flex; justify-content: space-between; align-items: center; 
+            margin-bottom: 20px; border-bottom: 1px solid var(--glass-border); padding-bottom: 15px;
+            gap: 10px;
+        }
         
-        /* MENU DE MONEDA ANUAL */
-        .currency-toggle {
+        .month-select { background: transparent; border: none; color: var(--accent); font-size: 1.3rem; font-weight: 800; text-transform: uppercase; outline: none; flex: 1; }
+
+        .currency-pill {
             display: flex; background: var(--glass); border: 1px solid var(--glass-border);
-            border-radius: 12px; padding: 4px; gap: 4px; margin-left: 10px;
+            border-radius: 12px; padding: 3px; gap: 3px;
         }
         .cur-btn {
-            font-size: 0.65rem; padding: 4px 8px; border-radius: 8px; cursor: pointer;
-            font-weight: 800; color: var(--text); opacity: 0.4;
+            font-size: 0.6rem; padding: 6px 10px; border-radius: 9px; cursor: pointer;
+            font-weight: 800; color: var(--text); opacity: 0.3;
         }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
 
+        .theme-btn { 
+            background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); 
+            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; 
+            justify-content: center; cursor: pointer; font-size: 1rem; flex-shrink: 0;
+        }
+
+        /* RESUMEN ANUAL */
         .annual-summary {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            border-radius: 20px; padding: 15px; margin-bottom: 25px;
+            border-radius: 20px; padding: 12px; margin-bottom: 20px;
             display: flex; justify-content: space-around; text-align: center;
         }
-        .annual-item span { display: block; font-size: 0.5rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .annual-item b { font-size: 0.85rem; font-weight: 700; }
+        .annual-item span { display: block; font-size: 0.5rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+        .annual-item b { font-size: 0.8rem; font-weight: 700; }
 
-        /* Estilos anteriores se mantienen... */
-        .rates-container { display: flex; gap: 10px; margin-bottom: 25px; }
-        .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
-        .rate-card b { font-size: 1rem; font-weight: 600; }
-        .rate-card.active { background: var(--accent); color: var(--bg-color); border-color: var(--accent); }
-        .section-label { font-size: 0.65rem; letter-spacing: 1.5px; margin-bottom: 10px; font-weight: 700; text-transform: uppercase; }
+        .rates-container { display: flex; gap: 8px; margin-bottom: 20px; }
+        .rate-card { flex: 1; background: var(--glass); padding: 10px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
+        .rate-card span { display: block; font-size: 0.55rem; opacity: 0.6; text-transform: uppercase; }
+        .rate-card b { font-size: 0.9rem; font-weight: 600; }
+        .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.1); }
+
+        .section-label { font-size: 0.65rem; letter-spacing: 1.5px; margin-bottom: 8px; font-weight: 700; text-transform: uppercase; }
+
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 20px; margin-bottom: 8px; }
-        .entry-row { display: flex; align-items: center; gap: 8px; }
+        .entry-row { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+        
         .emoji-input { background: var(--glass); border-radius: 10px; width: 34px; height: 34px; text-align: center; border: 1px solid var(--glass-border); color: var(--text); outline: none; flex-shrink: 0; }
-        .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.85rem; }
+        .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.85rem; min-width: 60px; }
+        
         .amount-group { display: flex; flex-direction: column; width: 70px; flex-shrink: 0; }
         .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.9rem; }
+        
         .sync-label { font-size: 0.6rem; opacity: 0.5; text-align: right; display: block; margin-top: 3px; }
-        .delete-btn { color: var(--text); cursor: pointer; font-size: 1.1rem; opacity: 0.3; }
-        .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 600; }
-        .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
-        #total-bs { font-size: 2.5rem; font-weight: 800; display: block; }
-        .chart-box { height: 160px; width: 100%; position: relative; margin-top: 20px;}
+        .delete-btn { color: var(--text); cursor: pointer; font-size: 1.1rem; opacity: 0.2; flex-shrink: 0; }
+
+        .add-btn { background: transparent; border: 1px dashed var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.65rem; font-weight: 600; }
+
+        .balance-section { text-align: center; margin: 25px 0 15px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
+        #total-bs { font-size: 2.3rem; font-weight: 800; display: block; letter-spacing: -1px; }
+        
+        .chart-box { height: 160px; width: 100%; position: relative; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -95,23 +117,27 @@
         <div class="header-row">
             <select id="selector-mes" class="month-select" onchange="cambiarMes()"></select>
             
-            <div class="currency-toggle">
+            <div class="currency-pill">
                 <div id="cur-bs" class="cur-btn active" onclick="setMonedaAnual('bs')">BS</div>
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
 
-            <button class="theme-btn" onclick="toggleTheme()" style="margin-left:10px">🌗</button>
+            <button class="theme-btn" onclick="toggleTheme()">🌗</button>
         </div>
 
         <div class="annual-summary">
-            <div class="annual-item"><span>Ingreso Anual</span><b id="ann-ing" style="color: var(--col-ing);">Bs 0</b></div>
-            <div class="annual-item"><span>Gasto Anual</span><b id="ann-gas" style="color: var(--col-gas);">Bs 0</b></div>
-            <div class="annual-item"><span>Ahorro Anual</span><b id="ann-aho" style="color: var(--col-aho);">Bs 0</b></div>
+            <div class="annual-item"><span>Ingreso Año</span><b id="ann-ing" style="color: var(--col-ing);">Bs 0</b></div>
+            <div class="annual-item"><span>Gasto Año</span><b id="ann-gas" style="color: var(--col-gas);">Bs 0</b></div>
+            <div class="annual-item"><span>Ahorro Año</span><b id="ann-aho" style="color: var(--col-aho);">Bs 0</b></div>
         </div>
 
         <div class="rates-container">
-            <div id="btn-bcv" class="rate-card active" onclick="seleccionarTasa('bcv')"><b>---</b><br><small>BCV</small></div>
-            <div id="btn-usdt" class="rate-card" onclick="seleccionarTasa('usdt')"><b>---</b><br><small>P2P</small></div>
+            <div id="btn-bcv" class="rate-card active" onclick="seleccionarTasa('bcv')">
+                <span>BCV Oficial</span><b id="val-bcv">0.00</b>
+            </div>
+            <div id="btn-usdt" class="rate-card" onclick="seleccionarTasa('usdt')">
+                <span>Paralelo P2P</span><b id="val-usdt">0.00</b>
+            </div>
         </div>
 
         <div class="section-label" style="color: var(--col-ing);">+ INGRESOS</div>
@@ -127,8 +153,9 @@
         <button class="add-btn" onclick="agregarEntrada('ahorros')">+ Nuevo Ahorro</button>
 
         <div class="balance-section">
+            <span style="font-size: 0.6rem; opacity: 0.5; letter-spacing: 1.5px; text-transform: uppercase;">Saldo Neto</span>
             <span id="total-bs">Bs 0,00</span>
-            <span id="total-usd" style="opacity: 0.6;">$ 0.00</span>
+            <span id="total-usd" style="opacity: 0.6; font-size: 0.9rem;">$ 0.00</span>
         </div>
 
         <div class="chart-box"><canvas id="barChart"></canvas></div>
@@ -136,17 +163,16 @@
     </div>
 
     <script>
-        if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
-
         const STORAGE_KEY = 'FINANCE_ELITE_DATA_FINAL'; 
         let rates = { bcv: 1, usdt: 1 };
         let tasaSeleccionada = 'bcv';
-        let monedaAnual = 'bs'; // Estado de la moneda anual
+        let monedaAnual = 'bs';
         let barChart, doughnutChart;
         
         const fmtBs = new Intl.NumberFormat('es-VE', { maximumFractionDigits: 0 });
-        const fmtUsd = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const fmtUsd = new Intl.NumberFormat('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
         const fmtFull = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2 });
+        
         const meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         let mesActual = meses[new Date().getMonth()];
         let registroAnual = {};
@@ -176,25 +202,69 @@
                 const d = await r.json();
                 rates.bcv = d.find(x => x.nombre === "Oficial").promedio;
                 rates.usdt = d.find(x => x.nombre === "Paralelo").promedio;
-                document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2);
-                document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2);
+                document.getElementById('val-bcv').innerText = rates.bcv.toFixed(2);
+                document.getElementById('val-usdt').innerText = rates.usdt.toFixed(2);
                 actualizarCalculos();
             } catch (e) { console.warn("API Down"); }
         }
 
-        // ... Lógica de agregar, renderizar, sync, borrar y editar se mantiene igual ...
-        function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
-        function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); renderTodo(); }
+        function seleccionarTasa(tipo) {
+            tasaSeleccionada = tipo;
+            document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv');
+            document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt');
+            renderTodo(); actualizarCalculos();
+        }
+
+        function agregarEntrada(tipo) {
+            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
+            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' };
+            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 });
+            renderTodo();
+        }
+
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
-        function renderLista(tipo, id) { const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; data.forEach((item, i) => { const div = document.createElement('div'); div.className = "entry-card"; div.innerHTML = `<div class="entry-row"><input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)"><input type="text" class="desc-input" placeholder="Nombre" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)"><div class="amount-group"><input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)"><span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span></div><div class="amount-group" style="margin-left:5px;"><input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)"><span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span></div><span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span></div>`; lista.appendChild(div); }); }
-        function sync(tipo, idx, origen, valor) { const tVal = rates[tasaSeleccionada]; const item = registroAnual[mesActual][tipo][idx]; const num = parseFloat(valor) || 0; if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); document.getElementById(`${tipo}-usd-${idx}`).value = item.usd; } else { item.usd = num; item.bs = (num * tVal).toFixed(2); document.getElementById(`${tipo}-bs-${idx}`).value = item.bs; } actualizarCalculos(); renderTodo(); }
+
+        function renderLista(tipo, id) {
+            const lista = document.getElementById(id); lista.innerHTML = "";
+            const tVal = rates[tasaSeleccionada];
+            const data = registroAnual[mesActual][tipo] || [];
+            data.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = "entry-card";
+                div.innerHTML = `
+                    <div class="entry-row">
+                        <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
+                        <input type="text" class="desc-input" placeholder="Nombre" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
+                        <div class="amount-group">
+                            <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
+                            <span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span>
+                        </div>
+                        <div class="amount-group" style="margin-left:5px;">
+                            <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
+                            <span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span>
+                        </div>
+                        <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
+                    </div>`;
+                lista.appendChild(div);
+            });
+        }
+
+        function sync(tipo, idx, origen, valor) {
+            const tVal = rates[tasaSeleccionada];
+            const item = registroAnual[mesActual][tipo][idx];
+            const num = parseFloat(valor) || 0;
+            if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); } 
+            else { item.usd = num; item.bs = (num * tVal).toFixed(2); }
+            actualizarCalculos();
+            renderTodo();
+        }
+
         function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = v; actualizarCalculos(); }
         function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
 
         function actualizarCalculos() {
             const tVal = rates[tasaSeleccionada];
             let totAnual = { ing: 0, gas: 0, aho: 0 };
-
             meses.forEach(m => {
                 if (registroAnual[m]) {
                     totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
@@ -203,13 +273,11 @@
                 }
             });
 
-            // Actualizar UI Anual según moneda elegida
-            const format = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
-            document.getElementById('ann-ing').innerText = format(totAnual.ing);
-            document.getElementById('ann-gas').innerText = format(totAnual.gas);
-            document.getElementById('ann-aho').innerText = format(totAnual.aho);
+            const formatA = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
+            document.getElementById('ann-ing').innerText = formatA(totAnual.ing);
+            document.getElementById('ann-gas').innerText = formatA(totAnual.gas);
+            document.getElementById('ann-aho').innerText = formatA(totAnual.aho);
 
-            // Totales mensuales
             const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
@@ -223,13 +291,28 @@
             guardarEnLocal();
         }
 
-        // ... Resto de funciones (Charts, LocalStorage, Meses, Temas) idénticas ...
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; renderTodo(); actualizarCalculos(); }
         function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual })); }
         function cargarDeLocal() { const store = localStorage.getItem(STORAGE_KEY); if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; setMonedaAnual(monedaAnual); } else { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } }
-        function initCharts() { const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff'; barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 9 } }, grid: { display: false } } } } }); doughnutChart = new Chart(document.getElementById('doughnutChart'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: document.body.classList.contains('light-mode')?'#fff':'#121212', cutout: '65%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { color: textColor, font: { size: 10 }, usePointStyle: true } } } } }); }
-        function updateCharts(ing, gas, aho, sal) { const barLabels = []; const barData = []; const barColors = []; (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(i.desc.substring(0,4)); barData.push(i.bs); barColors.push('#2ecc71'); }); (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(g.desc.substring(0,4)); barData.push(g.bs); barColors.push('#e74c3c'); }); (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(a.desc.substring(0,4)); barData.push(a.bs); barColors.push('#f1c40f'); }); barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); }
+        
+        function initCharts() { 
+            const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff'; 
+            barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 9 } }, grid: { display: false } } } } }); 
+            doughnutChart = new Chart(document.getElementById('doughnutChart'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: document.body.classList.contains('light-mode')?'#fff':'#121212', cutout: '65%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { color: textColor, font: { size: 10 }, usePointStyle: true } } } } }); 
+        }
+
+        function updateCharts(ing, gas, aho, sal) { 
+            const barLabels = []; const barData = []; const barColors = []; 
+            (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(i.desc.substring(0,4)); barData.push(i.bs); barColors.push('#2ecc71'); }); 
+            (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(g.desc.substring(0,4)); barData.push(g.bs); barColors.push('#e74c3c'); }); 
+            (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(a.desc.substring(0,4)); barData.push(a.bs); barColors.push('#f1c40f'); }); 
+            barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
+            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
+            if (sal > 0) { dLabels.push("Libre"); dData.push(sal); dCols.push("#2ecc71"); } 
+            doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
+        }
+
         inicializar();
     </script>
 </body>
