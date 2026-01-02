@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Configuración PWA y Logotipos -->
-    <link rel="manifest" href="manifest.json?v=21">
+    <!-- Configuración PWA y Logotipos Blindados -->
+    <link rel="manifest" href="manifest.json?v=22">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
@@ -13,7 +13,7 @@
     <link rel="shortcut icon" href="logo.png">
     <meta name="mobile-web-app-capable" content="yes">
 
-    <title>Finance Elite Master - Mobile Precision</title>
+    <title>Finance Elite Master - Precision Sync</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -175,7 +175,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v41.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v42.0</div>
         </div>
     </div>
 
@@ -289,7 +289,7 @@
         function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
         function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
-        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN ---
+        // --- SISTEMA DE ACTUALIZACIÓN Y SINCRONIZACIÓN MAESTRA ---
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
@@ -302,10 +302,22 @@
                     });
                 }).catch(() => {});
             });
-            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); }); } });
+
+            // REFUERZO DE SINCRONIZACIÓN: Al volver a enfocar la aplicación de escritorio
+            document.addEventListener('visibilitychange', () => {
+                if (document.visibilityState === 'visible') {
+                    // 1. Verificar actualización de código
+                    navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
+                    // 2. Forzar refresco de datos desde LocalStorage (Para Sincronización Desktop <-> Web)
+                    cargarDeLocal();
+                    renderTodo();
+                    actualizarCalculos();
+                }
+            });
             navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
         }
 
+        // Sincronización entre ventanas abiertas (tabs o ventanas independientes)
         window.addEventListener('storage', (e) => {
             if (e.key === STORAGE_KEY) {
                 cargarDeLocal();
@@ -420,7 +432,10 @@
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
-        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
+        
+        function guardarEnLocal() { 
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); 
+        }
 
         function cargarDeLocal() { 
             let store = localStorage.getItem(STORAGE_KEY);
