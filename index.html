@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <link rel="manifest" href="manifest.json?v=12">
+    <link rel="manifest" href="manifest.json?v=13">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="logo.png">
@@ -48,6 +48,7 @@
             width: 92%; max-width: 420px; padding: 22px 18px; margin: 10px auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             align-self: flex-start;
+            position: relative;
         }
 
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; gap: 10px; }
@@ -55,7 +56,9 @@
         .currency-toggle { display: flex; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 14px; padding: 3px; gap: 3px; }
         .cur-btn { font-size: 0.6rem; padding: 6px 10px; border-radius: 10px; cursor: pointer; font-weight: 800; color: var(--text); opacity: 0.3; }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
-        .theme-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; }
+        
+        .header-actions { display: flex; gap: 8px; align-items: center; }
+        .theme-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1rem; position: relative; }
 
         .annual-summary {
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
@@ -94,18 +97,86 @@
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
         
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
+
+        /* ESTILOS DE LA GUÍA INTERACTIVA (MODAL PASO A PASO) */
+        .guide-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); backdrop-filter: blur(20px);
+            z-index: 1000; display: none; 
+            overflow-y: auto; padding: 40px 20px;
+        }
+        .guide-content { max-width: 500px; margin: 0 auto; color: #fff; padding-bottom: 60px; text-align: center; position: relative; }
+        .guide-header { margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; position: relative; }
+        .guide-title { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
+        .guide-step-counter { font-size: 0.65rem; font-weight: 800; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .guide-close-x {
+            position: absolute; top: -10px; right: 0; width: 35px; height: 35px;
+            background: rgba(255,255,255,0.1); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; cursor: pointer; opacity: 0.6; transition: 0.2s;
+        }
+        .guide-close-x:active { transform: scale(0.9); opacity: 1; }
+
+        .guide-body { min-height: 220px; display: flex; flex-direction: column; justify-content: center; }
+        
+        .guide-section { margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
+        .guide-section h3 { font-size: 1.2rem; margin-top: 0; color: var(--col-aho); display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .guide-section p { font-size: 0.92rem; opacity: 0.85; line-height: 1.7; margin-bottom: 0; }
+        
+        .install-step-list { list-style: none; padding: 0; margin-top: 15px; }
+        .install-step-list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; font-size: 0.85rem; opacity: 0.9; }
+        .step-badge { background: var(--accent); color: #000; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.7rem; }
+
+        .guide-footer { display: flex; gap: 10px; margin-top: 20px; }
+        .guide-btn { 
+            flex: 1; padding: 15px; border-radius: 18px; font-weight: 800; 
+            font-size: 0.9rem; cursor: pointer; border: none; transition: 0.2s;
+        }
+        .btn-next { background: var(--col-aho); color: #000; }
+        .btn-next:active { transform: scale(0.98); }
+        .btn-prev { background: rgba(255,255,255,0.1); color: #fff; }
     </style>
 </head>
 <body>
 
+    <!-- MODAL DE LA GUÍA INTERACTIVA -->
+    <div id="guide" class="guide-overlay">
+        <div class="guide-content">
+            <div class="guide-header">
+                <div class="guide-close-x" onclick="finishGuide()">✕</div>
+                <div class="guide-title">GUÍA MAESTRA</div>
+                <div id="step-counter" class="guide-step-counter">PASO 1 DE 9</div>
+            </div>
+
+            <div id="guide-body" class="guide-body">
+                <!-- Contenido cargado dinámicamente -->
+            </div>
+
+            <div class="guide-footer">
+                <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
+                <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
+            </div>
+            
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">
+                FINANCE ELITE MASTER v36.0
+            </div>
+        </div>
+    </div>
+
     <div class="app-card">
         <div class="header-row">
             <select id="selector-mes" class="month-select" onchange="cambiarMes()"></select>
+            
             <div class="currency-toggle">
                 <div id="cur-bs" class="cur-btn active" onclick="setMonedaAnual('bs')">BS</div>
                 <div id="cur-usd" class="cur-btn" onclick="setMonedaAnual('usd')">USD</div>
             </div>
-            <button class="theme-btn" onclick="toggleTheme()">🌗</button>
+
+            <div class="header-actions">
+                <!-- Botón de información eliminado por solicitud -->
+                <button class="theme-btn" onclick="toggleTheme()">🌗</button>
+            </div>
         </div>
 
         <div class="annual-summary">
@@ -141,12 +212,124 @@
     </div>
 
     <script>
-        // Registro Service Worker con protección de protocolo
+        // --- MOTOR DE LA GUÍA INTERACTIVA ---
+        let currentStep = 0;
+        const guideSteps = [
+            {
+                title: "Bienvenido",
+                icon: "💼",
+                text: "Finance Elite Master es tu estación de control patrimonial. Está diseñada para darte claridad absoluta sobre tu dinero en el entorno económico actual. Vamos a enseñarte cómo dominarla."
+            },
+            {
+                title: "Instalar como App 📱",
+                icon: "📲",
+                text: "Lleva tu gestión a otro nivel convirtiendo esta web en una App de escritorio o móvil sin ocupar espacio:",
+                install: true
+            },
+            {
+                title: "Gestión por Meses",
+                icon: "📅",
+                text: "La app se organiza por meses. Usa el selector superior para viajar en el tiempo. Cada mes es independiente, permitiéndote planificar el futuro o auditar el pasado con precisión."
+            },
+            {
+                title: "Resumen Anual",
+                icon: "🌍",
+                text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero."
+            },
+            {
+                title: "Temas y Colores",
+                icon: "🎨",
+                text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro (sofisticación y ahorro de batería) o el Modo Claro (máxima visibilidad)."
+            },
+            {
+                title: "Divisas y Tasas",
+                icon: "💰",
+                text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real."
+            },
+            {
+                title: "Categorías de Poder",
+                icon: "📂",
+                text: "Registra en tres frentes: **Ingresos** (lo que ganas), **Gastos** (lo que sale) y **Ahorros** (tu capital blindado). Separar el ahorro del gasto es la regla #1 de la riqueza."
+            },
+            {
+                title: "Gráficos de Inteligencia",
+                icon: "📊",
+                text: "No solo leas números, analízalos. El gráfico de barras compara montos y el de dona te muestra cuánto dinero te queda realmente **Libre** tras cubrir tus gastos."
+            },
+            {
+                title: "Personalización Total",
+                icon: "✨",
+                text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán al actualizar la app. ¡Es hora de empezar!"
+            }
+        ];
+
+        function renderGuideStep() {
+            const step = guideSteps[currentStep];
+            const body = document.getElementById('guide-body');
+            const counter = document.getElementById('step-counter');
+            const btnPrev = document.getElementById('btn-prev');
+            const btnNext = document.getElementById('btn-next');
+
+            if (step.install) {
+                body.innerHTML = `
+                    <div class="guide-section">
+                        <h3>${step.icon} ${step.title}</h3>
+                        <p>${step.text}</p>
+                        <ul class="install-step-list">
+                            <li><span class="step-badge">1</span> <b>iPhone:</b> Toca el icono de Compartir (cuadrado con flecha) y selecciona <b>"Agregar al inicio"</b>.</li>
+                            <li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos verticales del navegador y elige <b>"Instalar aplicación"</b>.</li>
+                            <li><span class="step-badge">3</span> <b>PC/Escritorio:</b> En la barra de direcciones verás un icono de pantalla con una flecha. Toca <b>"Instalar"</b>.</li>
+                        </ul>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = `
+                    <div class="guide-section">
+                        <h3>${step.icon} ${step.title}</h3>
+                        <p>${step.text}</p>
+                    </div>
+                `;
+            }
+
+            counter.innerText = `PASO ${currentStep + 1} DE ${guideSteps.length}`;
+            btnPrev.style.display = currentStep === 0 ? 'none' : 'block';
+            btnNext.innerText = currentStep === guideSteps.length - 1 ? 'EMPEZAR AHORA' : 'SIGUIENTE';
+        }
+
+        function changeStep(delta) {
+            currentStep += delta;
+            if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); }
+        }
+
+        function finishGuide() {
+            document.getElementById('guide').style.display = 'none';
+            localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true');
+        }
+
+        function openGuide() {
+            currentStep = 0;
+            renderGuideStep();
+            document.getElementById('guide').style.display = 'block';
+        }
+
+        // --- SISTEMA DE AUTO-ACTUALIZACIÓN PARA PWA ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 if (window.location.protocol.startsWith('http')) {
-                    navigator.serviceWorker.register('sw.js').catch(err => console.warn("SW Offline Mode"));
+                    navigator.serviceWorker.register('sw.js').then(reg => {
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    window.location.reload();
+                                }
+                            });
+                        });
+                    }).catch(err => console.warn("Modo Local"));
                 }
+            });
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
             });
         }
 
@@ -156,6 +339,8 @@
         let rates = { bcv: 1, usdt: 1 };
         let tasaSeleccionada = 'bcv';
         let monedaAnual = 'bs';
+        let notifActivas = false;
+        let ultimaNotifDate = null;
         let barChart, doughnutChart;
         
         const fmtBs = new Intl.NumberFormat('es-VE', { maximumFractionDigits: 0 });
@@ -174,7 +359,43 @@
             cargarDeLocal();
             renderTodo();
             actualizarCalculos();
+            
+            const guideSeen = localStorage.getItem('GUIDE_MAESTRA_SEEN');
+            if (!guideSeen) {
+                renderGuideStep();
+                document.getElementById('guide').style.display = 'block';
+            }
+            
+            solicitarPermisoAutomatico();
+            verificarNotificacionesSemanales(); 
             setInterval(getRates, 300000);
+        }
+
+        function solicitarPermisoAutomatico() {
+            if (!("Notification" in window)) return;
+            if (Notification.permission === "default") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        notifActivas = true;
+                        ultimaNotifDate = Date.now();
+                        new Notification("¡Notificaciones activadas!", { body: "Te avisaremos semanalmente para que lleves tu control.", icon: "logo.png" });
+                        guardarEnLocal();
+                    }
+                });
+            } else if (Notification.permission === "granted") {
+                if (!notifActivas) { notifActivas = true; guardarEnLocal(); }
+            }
+        }
+
+        function verificarNotificacionesSemanales() {
+            if (!notifActivas || Notification.permission !== "granted") return;
+            const ahora = Date.now();
+            const unaSemanaMs = 7 * 24 * 60 * 60 * 1000;
+            if (!ultimaNotifDate || (ahora - ultimaNotifDate) > unaSemanaMs) {
+                new Notification("Recordatorio de Finanzas 📉", { body: "Es momento de agregar tus gastos de la semana para no perder el control.", icon: "logo.png" });
+                ultimaNotifDate = ahora;
+                guardarEnLocal();
+            }
         }
 
         function setMonedaAnual(m) {
@@ -215,7 +436,6 @@
             data.forEach((item, i) => { 
                 const div = document.createElement('div'); 
                 div.className = "entry-card"; 
-                // Cada input tiene un ID único para poder actualizarlo sin re-renderizar toda la lista
                 div.innerHTML = `<div class="entry-row">
                     <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
                     <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
@@ -233,46 +453,32 @@
             }); 
         }
 
-        // SOLUCIÓN AL FOCO: La función sync ahora actualiza solo los valores necesarios, NO redibuja la lista
         function sync(tipo, idx, origen, valor) { 
             const tVal = rates[tasaSeleccionada]; 
             const item = registroAnual[mesActual][tipo][idx]; 
             const num = parseFloat(valor) || 0; 
-            
             if (origen === 'bs') { 
-                item.bs = num; 
-                item.usd = (num / tVal).toFixed(2); 
-                // Actualizamos el input de USD directamente sin re-renderizar
+                item.bs = num; item.usd = (num / tVal).toFixed(2); 
                 const targetInput = document.getElementById(`${tipo}-usd-${idx}`);
                 if (targetInput) targetInput.value = item.usd;
             } else { 
-                item.usd = num; 
-                item.bs = (num * tVal).toFixed(2); 
-                // Actualizamos el input de Bs directamente sin re-renderizar
+                item.usd = num; item.bs = (num * tVal).toFixed(2); 
                 const targetInput = document.getElementById(`${tipo}-bs-${idx}`);
                 if (targetInput) targetInput.value = item.bs;
             } 
-
-            // Actualizamos solo las etiquetas de ayuda ($ / Bs)
             const labelUsd = document.getElementById(`${tipo}-label-usd-${idx}`);
             const labelBs = document.getElementById(`${tipo}-label-bs-${idx}`);
             if(labelUsd) labelUsd.innerText = `$ ${(item.bs/tVal).toFixed(2)}`;
             if(labelBs) labelBs.innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
-
             actualizarCalculos(); 
         }
 
-        function editar(t, idx, c, v) { 
-            registroAnual[mesActual][t][idx][c] = v; 
-            actualizarCalculos(); 
-        }
-
+        function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = v; actualizarCalculos(); }
         function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
 
         function actualizarCalculos() {
             const tVal = rates[tasaSeleccionada];
             let totAnual = { ing: 0, gas: 0, aho: 0 };
-
             meses.forEach(m => {
                 if (registroAnual[m]) {
                     totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
@@ -280,56 +486,39 @@
                     totAnual.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
                 }
             });
-
             const format = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
             document.getElementById('ann-ing').innerText = format(totAnual.ing);
             document.getElementById('ann-gas').innerText = format(totAnual.gas);
             document.getElementById('ann-aho').innerText = format(totAnual.aho);
-
             const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
             const saldo = tIng - tGas - tAho;
-
-            document.getElementById('total-bs').innerText = `Bs ${fmtFull.format(saldo)}`;
-            document.getElementById('total-bs').style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
+            const elBs = document.getElementById('total-bs');
+            elBs.innerText = `Bs ${fmtFull.format(saldo)}`;
+            elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
             document.getElementById('total-usd').innerText = `$ ${(saldo / tVal).toFixed(2)}`;
-
             updateCharts(tIng, tGas, tAho, saldo);
             guardarEnLocal();
         }
 
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); initCharts(); actualizarCalculos(); }
-        
-        function cambiarMes() { 
-            mesActual = document.getElementById('selector-mes').value; 
-            if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; }
-            renderTodo(); 
-            actualizarCalculos(); 
-        }
-
-        function guardarEnLocal() { 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual })); 
-        }
+        function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
+        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
 
         function cargarDeLocal() { 
             let store = localStorage.getItem(STORAGE_KEY);
-            if (!store) {
-                for (let key of OLD_KEYS) {
-                    let oldData = localStorage.getItem(key);
-                    if (oldData) { store = oldData; break; }
-                }
-            }
+            if (!store) { for (let key of OLD_KEYS) { let oldData = localStorage.getItem(key); if (oldData) { store = oldData; break; } } }
             if (store) { 
                 const obj = JSON.parse(store); 
                 registroAnual = obj.data || {}; 
                 mesActual = obj.mes || mesActual; 
                 tasaSeleccionada = obj.tasa || 'bcv'; 
                 monedaAnual = obj.curAnual || 'bs'; 
+                notifActivas = obj.notifActivas || false;
+                ultimaNotifDate = obj.ultimaNotifDate || null;
                 setMonedaAnual(monedaAnual); 
-            } else { 
-                meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; });
-            } 
+            } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } 
         }
 
         function initCharts() { 
