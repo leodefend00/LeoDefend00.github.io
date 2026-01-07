@@ -96,7 +96,7 @@
         }
         .magic-input { background: transparent; border: none; color: var(--text); padding: 12px 0; font-size: 0.9rem; width: 100%; outline: none; font-weight: 500; }
         .magic-input::placeholder { color: var(--text); opacity: 0.3; }
-        .voice-btn { background: var(--accent); border: none; color: var(--bg-color); width: 32px; height: 32px; border-radius: 12px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .voice-btn { background: var(--accent); border: none; color: var(--bg-color); width: 32px; height: 32px; border-radius: 12px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.3s; }
         .voice-btn.listening { background: var(--col-gas); color: white; animation: pulse 1.5s infinite; }
 
         @keyframes pulse {
@@ -106,7 +106,9 @@
         }
 
         /* Chat IA */
-        .ai-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--accent); color: var(--bg-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; font-size: 1.5rem; }
+        .ai-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--accent); color: var(--bg-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; font-size: 1.5rem; transition: 0.3s; }
+        .ai-chat-btn:active { transform: scale(0.9); }
+        
         .ai-chat-window { position: fixed; bottom: 85px; right: 20px; width: 320px; height: 450px; border-radius: 25px; background: var(--bg-color); border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 100; overflow: hidden; backdrop-filter: blur(20px); }
         .ai-header { padding: 15px; background: var(--glass); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .ai-header span { font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
@@ -185,7 +187,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v55.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v56.0</div>
         </div>
     </div>
 
@@ -277,22 +279,27 @@
     <script>
         const apiKey = ""; 
 
-        // --- CANAL DE COMUNICACIÓN (SYNC) ---
-        const syncChannel = new BroadcastChannel('finance_sync_channel');
-        syncChannel.onmessage = (event) => { if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } };
-
-        // --- MAPA DE INTELIGENCIA VISUAL (EMOJIS) ---
         const emojiMap = {
             'comida': '🍔', 'cena': '🍽️', 'almuerzo': '🍱', 'desayuno': '🍳', 'sushi': '🍣', 'pizza': '🍕',
             'sueldo': '💵', 'pago': '💰', 'nomina': '💳', 'bono': '🎁', 'renta': '🏠', 'venta': '📈',
             'transporte': '🚗', 'uber': '🚕', 'gasolina': '⛽', 'bus': '🚌',
             'ahorro': '🏦', 'reserva': '🔒', 'meta': '🎯',
             'salud': '💊', 'medicina': '🏥', 'gym': '💪',
-            'ocio': '🎬', 'cine': '🍿', 'fiesta': '🥳'
+            'ocio': '🎬', 'cine': '🍿', 'fiesta': '🥳', 'cafe': '☕', 'ropa': '👕', 'viaje': '✈️'
         };
 
-        // --- MOTOR DE IA (GEMINI) ---
-        function toggleAIChat() { const win = document.getElementById('ai-window'); win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; }
+        const syncChannel = new BroadcastChannel('finance_sync_channel');
+        syncChannel.onmessage = (event) => { if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } };
+
+        function toggleAIChat() { 
+            const win = document.getElementById('ai-window'); 
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; 
+            if(win.style.display === 'flex') {
+                const box = document.getElementById('ai-messages');
+                box.scrollTop = box.scrollHeight;
+            }
+        }
+
         function handleAIKey(e) { if (e.key === 'Enter') sendToAI(); }
 
         async function sendToAI() {
@@ -310,13 +317,15 @@
             box.scrollTop = box.scrollHeight;
 
             const context = JSON.stringify(registroAnual);
-            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Ayuda al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde siempre basándote en los datos reales del JSON.`;
+            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Tu misión es ayudar al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde basándote estrictamente en los datos reales del JSON proporcionado.`;
 
             try {
                 const response = await callGeminiAI(query, systemPrompt);
-                document.getElementById(loaderId).innerText = response;
+                const loader = document.getElementById(loaderId);
+                if (loader) loader.innerText = response;
             } catch (error) { 
-                document.getElementById(loaderId).innerText = "Hubo un problema de conexión. Por favor, intenta de nuevo."; 
+                const loader = document.getElementById(loaderId);
+                if (loader) loader.innerText = "Hubo un problema de conexión. Por favor, intenta de nuevo."; 
             }
             box.scrollTop = box.scrollHeight;
         }
@@ -335,10 +344,13 @@
                     body: JSON.stringify(payload)
                 });
                 
-                if (!response.ok) throw new Error("API Error");
+                if (!response.ok) throw new Error("API Connection Error");
                 
                 const result = await response.json();
-                return result.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar una respuesta.";
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!text) throw new Error("Empty Response");
+                return text;
             } catch (error) {
                 if (retries < 5) {
                     const delay = Math.pow(2, retries) * 1000;
@@ -349,7 +361,6 @@
             }
         }
 
-        // --- MOTOR DE VOZ ---
         function startVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) { return; }
@@ -359,15 +370,13 @@
             recognition.lang = 'es-ES';
             recognition.onstart = () => { voiceBtn.classList.add('listening'); };
             recognition.onresult = (event) => { 
-                const transcript = event.results[0][0].transcript;
-                input.value = transcript;
-                processMagicInput(true); // Indica que viene de VOZ
+                input.value = event.results[0][0].transcript;
+                processMagicInput(true); // VOZ = USD
             };
             recognition.onend = () => { voiceBtn.classList.remove('listening'); };
             recognition.start();
         }
 
-        // --- MOTOR MÁGICO (AUTOMATIZACIÓN) ---
         function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(false); }
 
         function processMagicInput(isVoice = false) {
@@ -380,34 +389,46 @@
             let palabras = [];
 
             parts.forEach(p => {
-                const num = parseFloat(p.replace(",", "."));
+                const cleanNum = p.replace(",", ".");
+                const num = parseFloat(cleanNum);
                 if (!isNaN(num) && num > 0) monto = num;
                 else if (p.length > 2) palabras.push(p.toLowerCase());
             });
 
             if (monto === 0) return;
 
-            // Extraer Keyword (la palabra más larga o descriptiva)
-            palabras.sort((a,b) => b.length - a.length);
-            const keyword = palabras[0] || "Registro";
-            
-            // Asignar Emoji Automático
+            let keyword = "Registro";
             let emoji = "📝";
-            for (const [key, val] of Object.entries(emojiMap)) {
-                if (keyword.includes(key)) { emoji = val; break; }
+            
+            // Prioridad a palabras clave en el mapa de emojis
+            for (const p of palabras) {
+                if (emojiMap[p]) {
+                    keyword = p;
+                    emoji = emojiMap[p];
+                    break;
+                }
+            }
+            
+            // Si no hay emoji directo, buscar por inclusión
+            if (emoji === "📝") {
+                palabras.sort((a,b) => b.length - a.length);
+                const longWord = palabras[0] || "Registro";
+                keyword = longWord;
+                for (const [key, val] of Object.entries(emojiMap)) {
+                    if (keyword.includes(key)) { emoji = val; break; }
+                }
             }
 
             let tipo = 'gastos'; 
             const inKey = ['pago', 'sueldo', 'nomina', 'bono', 'renta', 'venta', 'ingreso', 'trabajo'];
             const ahKey = ['ahorro', 'reserva', 'fondo', 'banco', 'guardar'];
 
-            if (inKey.some(k => keyword.includes(k))) tipo = 'ingresos';
-            else if (ahKey.some(k => keyword.includes(k))) tipo = 'ahorros';
+            if (inKey.some(k => keyword.toLowerCase().includes(k))) tipo = 'ingresos';
+            else if (ahKey.some(k => keyword.toLowerCase().includes(k))) tipo = 'ahorros';
 
             const tVal = rates[tasaSeleccionada];
             let itemData = { icono: emoji, desc: keyword.charAt(0).toUpperCase() + keyword.slice(1) };
 
-            // REGLA: Si es VOZ -> El monto es USD. Si es TEXTO -> El monto es BS.
             if (isVoice) {
                 itemData.usd = monto;
                 itemData.bs = (monto * tVal).toFixed(2);
@@ -422,10 +443,9 @@
             input.value = "";
             renderTodo();
             actualizarCalculos();
-            enviarNotificacionCambio("Registrado ✅", `Guardado como ${isVoice ? '$' : 'Bs'} en ${tipo}.`);
+            enviarNotificacionCambio("Registrado ✅", `${isVoice ? '$' : 'Bs'} guardado en ${tipo}.`);
         }
 
-        // --- UI E LISTAS ---
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
         
         function renderLista(tipo, id) { 
@@ -453,12 +473,11 @@
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
         function enviarNotificacionCambio(titulo, cuerpo) { if (Notification.permission === "granted") { new Notification(titulo, { body: cuerpo, icon: "logo.png" }); } syncChannel.postMessage('sync_required'); }
 
-        // --- GUIA ---
         let currentStep = 0;
         const guideSteps = [
             { title: "Bienvenido", icon: "📱", text: "Tu estación financiera personal." },
-            { title: "Voz en Dólares 🎙️", icon: "💰", text: "Habla por el micro: 'Pizza 15'. La App detectará que son <b>$15</b>, buscará el emoji 🍕 y pondrá 'Pizza' como keyword." },
-            { title: "Analista IA 🤖", icon: "🧠", text: "Toca el robot para hablar con tu consultor. Ahora es más inteligente y rápido." }
+            { title: "Voz en Dólares 🎙️", icon: "💰", text: "Usa el micro: 'Sushi 15'. Se guardarán <b>$15</b> y pondrá el emoji 🍣 solo." },
+            { title: "Analista IA 🤖", icon: "🧠", text: "Habla con tu consultor experto tocando el robot." }
         ];
 
         function renderGuideStep() {
@@ -475,7 +494,6 @@
         function changeStep(delta) { currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
         function finishGuide() { document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
 
-        // --- CORE ---
         const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
         let rates = { bcv: 1, usdt: 1 };
         let tasaSeleccionada = 'bcv';
