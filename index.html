@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configuración de App Nativa (PWA) -->
-    <link rel="manifest" href="manifest.json?v=35">
+    <link rel="manifest" href="manifest.json?v=36">
     <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Finance Elite">
 
-    <title>Finance Elite Master - AI Edition</title>
+    <title>Finance Elite Master - AI Voice Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -187,7 +187,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v56.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v58.0</div>
         </div>
     </div>
 
@@ -199,7 +199,7 @@
             <div style="cursor:pointer" onclick="toggleAIChat()">✕</div>
         </div>
         <div id="ai-messages" class="ai-messages">
-            <div class="msg msg-ai">¡Hola, Master! Estoy aquí para ayudarte a entender mejor tus finanzas. ¿Qué te gustaría consultar hoy?</div>
+            <div class="msg msg-ai">¡Hola, Master! Estoy listo para ayudarte a entender mejor tu progreso financiero. ¿Qué te gustaría consultar hoy?</div>
         </div>
         <div class="ai-input-area">
             <input type="text" id="ai-input" class="ai-input" placeholder="Pregúntame sobre tus registros..." onkeypress="handleAIKey(event)">
@@ -220,10 +220,10 @@
             </div>
         </div>
 
-        <!-- BARRA MÁGICA AUTOMÁTICA CON VOZ -->
+        <!-- BARRA MÁGICA AUTOMÁTICA CON VOZ INTELIGENTE -->
         <div class="magic-input-container">
             <input type="text" id="magic-bar" class="magic-input" placeholder="Di o escribe: 'Cena 500'..." onkeypress="handleMagicKey(event)">
-            <button id="voice-btn" class="voice-btn" onclick="startVoiceRecognition()" title="Hablar">🎙️</button>
+            <button id="voice-btn" class="voice-btn" onclick="startVoiceRecognition()" title="Hablar con la IA">🎙️</button>
         </div>
 
         <div class="annual-summary">
@@ -279,18 +279,11 @@
     <script>
         const apiKey = ""; 
 
-        const emojiMap = {
-            'comida': '🍔', 'cena': '🍽️', 'almuerzo': '🍱', 'desayuno': '🍳', 'sushi': '🍣', 'pizza': '🍕',
-            'sueldo': '💵', 'pago': '💰', 'nomina': '💳', 'bono': '🎁', 'renta': '🏠', 'venta': '📈',
-            'transporte': '🚗', 'uber': '🚕', 'gasolina': '⛽', 'bus': '🚌',
-            'ahorro': '🏦', 'reserva': '🔒', 'meta': '🎯',
-            'salud': '💊', 'medicina': '🏥', 'gym': '💪',
-            'ocio': '🎬', 'cine': '🍿', 'fiesta': '🥳', 'cafe': '☕', 'ropa': '👕', 'viaje': '✈️'
-        };
-
+        // --- CANAL DE COMUNICACIÓN (SYNC) ---
         const syncChannel = new BroadcastChannel('finance_sync_channel');
         syncChannel.onmessage = (event) => { if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } };
 
+        // --- MOTOR DE IA (GEMINI ANALYST) ---
         function toggleAIChat() { 
             const win = document.getElementById('ai-window'); 
             win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; 
@@ -313,11 +306,11 @@
             box.scrollTop = box.scrollHeight;
 
             const loaderId = "ai-loader-" + Date.now();
-            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Analizando tus finanzas...</div>`;
+            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Revisando tus registros...</div>`;
             box.scrollTop = box.scrollHeight;
 
             const context = JSON.stringify(registroAnual);
-            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Tu misión es ayudar al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde basándote estrictamente en los datos reales del JSON proporcionado.`;
+            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Tu misión es ayudar al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde siempre basándote en los datos reales del JSON. No menciones que tienes acceso a archivos, habla como un consultor personal.`;
 
             try {
                 const response = await callGeminiAI(query, systemPrompt);
@@ -344,13 +337,16 @@
                     body: JSON.stringify(payload)
                 });
                 
-                if (!response.ok) throw new Error("API Connection Error");
-                
                 const result = await response.json();
-                const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
                 
-                if (!text) throw new Error("Empty Response");
-                return text;
+                // Corrección: Manejo robusto de la respuesta de Gemini
+                if (result.candidates && result.candidates[0] && result.candidates[0].content) {
+                    return result.candidates[0].content.parts[0].text;
+                } else if (result.error) {
+                    throw new Error(result.error.message);
+                } else {
+                    throw new Error("Respuesta inválida de la IA");
+                }
             } catch (error) {
                 if (retries < 5) {
                     const delay = Math.pow(2, retries) * 1000;
@@ -361,93 +357,113 @@
             }
         }
 
+        // --- MOTOR DE VOZ IA (USD AUTOMÁTICO) ---
         function startVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { return; }
+            if (!SpeechRecognition) { 
+                enviarNotificacionCambio("Voz No Soportada 🎙️", "Tu navegador no permite entrada por voz."); 
+                return; 
+            }
             const recognition = new SpeechRecognition();
             const voiceBtn = document.getElementById('voice-btn');
             const input = document.getElementById('magic-bar');
+            
             recognition.lang = 'es-ES';
-            recognition.onstart = () => { voiceBtn.classList.add('listening'); };
-            recognition.onresult = (event) => { 
-                input.value = event.results[0][0].transcript;
-                processMagicInput(true); // VOZ = USD
+            recognition.onstart = () => { 
+                voiceBtn.classList.add('listening'); 
+                input.placeholder = "Escuchando...";
             };
-            recognition.onend = () => { voiceBtn.classList.remove('listening'); };
+            
+            recognition.onresult = async (event) => { 
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                await processVoiceWithAI(transcript); 
+            };
+            
+            recognition.onerror = (e) => { 
+                voiceBtn.classList.remove('listening');
+                let errorMsg = "Error al escuchar";
+                if (e.error === 'not-allowed') errorMsg = "Permiso denegado al micro";
+                else if (e.error === 'network') errorMsg = "Error de red";
+                input.placeholder = errorMsg;
+                console.error("Error Voz Detallado:", e.error);
+            };
+            
+            recognition.onend = () => { 
+                voiceBtn.classList.remove('listening'); 
+                if (!input.value) input.placeholder = "Di o escribe...";
+            };
+            
             recognition.start();
         }
 
-        function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(false); }
+        async function processVoiceWithAI(transcript) {
+            const input = document.getElementById('magic-bar');
+            input.placeholder = "IA Procesando voz...";
+            
+            const systemPrompt = `Eres un procesador de lenguaje natural financiero. El usuario dirá una frase sobre un gasto, ingreso o ahorro. 
+            Debes extraer: 
+            1. El monto (SIEMPRE ES EN DÓLARES).
+            2. El tipo (ingresos, gastos o ahorros).
+            3. Una sola palabra clave para la descripción.
+            4. El emoji adecuado.
+            Responde ÚNICAMENTE con un JSON puro: {"tipo": "...", "icono": "...", "desc": "...", "monto_usd": 0.00}`;
 
-        function processMagicInput(isVoice = false) {
+            try {
+                const aiResult = await callGeminiAI(transcript, systemPrompt);
+                const cleanJson = aiResult.replace(/```json|```/g, "").trim();
+                const data = JSON.parse(cleanJson);
+                
+                if (data.monto_usd > 0) {
+                    const tVal = rates[tasaSeleccionada];
+                    const itemData = {
+                        icono: data.icono || "📝",
+                        desc: data.desc || "Voz",
+                        usd: data.monto_usd,
+                        bs: (data.monto_usd * tVal).toFixed(2)
+                    };
+
+                    const tipo = data.tipo || 'gastos';
+                    if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
+                    registroAnual[mesActual][tipo].push(itemData);
+                    
+                    input.value = "";
+                    renderTodo();
+                    actualizarCalculos();
+                    enviarNotificacionCambio("Oído Maestro 🎙️", `Guardado ${data.icono} ${data.desc} por $${data.monto_usd}.`);
+                }
+            } catch (error) {
+                enviarNotificacionCambio("IA confundida 🤖", "No pude procesar la voz. Intenta de nuevo.");
+            }
+            input.placeholder = "Di o escribe...";
+        }
+
+        // --- MOTOR MÁGICO TEXTO (BS AUTOMÁTICO) ---
+        function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(); }
+        function processMagicInput() {
             const input = document.getElementById('magic-bar');
             const val = input.value.trim();
             if (!val) return;
-
             const parts = val.split(" ");
-            let monto = 0;
-            let palabras = [];
-
+            let monto = 0; let palabras = [];
             parts.forEach(p => {
-                const cleanNum = p.replace(",", ".");
-                const num = parseFloat(cleanNum);
+                const num = parseFloat(p.replace(",", "."));
                 if (!isNaN(num) && num > 0) monto = num;
                 else if (p.length > 2) palabras.push(p.toLowerCase());
             });
-
             if (monto === 0) return;
-
-            let keyword = "Registro";
-            let emoji = "📝";
-            
-            // Prioridad a palabras clave en el mapa de emojis
-            for (const p of palabras) {
-                if (emojiMap[p]) {
-                    keyword = p;
-                    emoji = emojiMap[p];
-                    break;
-                }
-            }
-            
-            // Si no hay emoji directo, buscar por inclusión
-            if (emoji === "📝") {
-                palabras.sort((a,b) => b.length - a.length);
-                const longWord = palabras[0] || "Registro";
-                keyword = longWord;
-                for (const [key, val] of Object.entries(emojiMap)) {
-                    if (keyword.includes(key)) { emoji = val; break; }
-                }
-            }
-
+            palabras.sort((a,b) => b.length - a.length);
+            const keyword = palabras[0] || "Registro";
             let tipo = 'gastos'; 
-            const inKey = ['pago', 'sueldo', 'nomina', 'bono', 'renta', 'venta', 'ingreso', 'trabajo'];
-            const ahKey = ['ahorro', 'reserva', 'fondo', 'banco', 'guardar'];
-
-            if (inKey.some(k => keyword.toLowerCase().includes(k))) tipo = 'ingresos';
-            else if (ahKey.some(k => keyword.toLowerCase().includes(k))) tipo = 'ahorros';
-
+            if (['pago', 'sueldo', 'ingreso'].some(k => keyword.includes(k))) tipo = 'ingresos';
             const tVal = rates[tasaSeleccionada];
-            let itemData = { icono: emoji, desc: keyword.charAt(0).toUpperCase() + keyword.slice(1) };
-
-            if (isVoice) {
-                itemData.usd = monto;
-                itemData.bs = (monto * tVal).toFixed(2);
-            } else {
-                itemData.bs = monto;
-                itemData.usd = (monto / tVal).toFixed(2);
-            }
-
+            const itemData = { icono: "📝", desc: keyword.charAt(0).toUpperCase() + keyword.slice(1), bs: monto, usd: (monto / tVal).toFixed(2) };
             if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
             registroAnual[mesActual][tipo].push(itemData);
-            
-            input.value = "";
-            renderTodo();
-            actualizarCalculos();
-            enviarNotificacionCambio("Registrado ✅", `${isVoice ? '$' : 'Bs'} guardado en ${tipo}.`);
+            input.value = ""; renderTodo(); actualizarCalculos();
         }
 
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
-        
         function renderLista(tipo, id) { 
             const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
             data.forEach((item, i) => { 
@@ -469,15 +485,14 @@
             }); 
         }
 
-        const tips = ["Prioriza tu ahorro.", "Dólares protegen tu valor.", "Evita los gastos hormiga.", "Usa la regla 50/30/20."];
-        let selectedTip = tips[Math.floor(Math.random() * tips.length)];
         function enviarNotificacionCambio(titulo, cuerpo) { if (Notification.permission === "granted") { new Notification(titulo, { body: cuerpo, icon: "logo.png" }); } syncChannel.postMessage('sync_required'); }
 
+        // --- GUIA ---
         let currentStep = 0;
         const guideSteps = [
-            { title: "Bienvenido", icon: "📱", text: "Tu estación financiera personal." },
-            { title: "Voz en Dólares 🎙️", icon: "💰", text: "Usa el micro: 'Sushi 15'. Se guardarán <b>$15</b> y pondrá el emoji 🍣 solo." },
-            { title: "Analista IA 🤖", icon: "🧠", text: "Habla con tu consultor experto tocando el robot." }
+            { title: "Bienvenido", icon: "📱", text: "Tu estación financiera personal con IA integrada." },
+            { title: "Voz Inteligente 🎙️", icon: "🧠", text: "Habla con naturalidad: 'Gasté 20 dólares en café'. La IA pondrá el emoji ☕, el monto en dólares y lo guardará solo." },
+            { title: "Analista IA 🤖", icon: "🚀", text: "Pregúntale lo que quieras sobre tus registros al chatbot robotizado." }
         ];
 
         function renderGuideStep() {
@@ -510,7 +525,6 @@
             const selector = document.getElementById('selector-mes');
             meses.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); selector.appendChild(o); });
             selector.value = mesActual;
-            document.getElementById('dynamic-tip').innerText = selectedTip;
             await getRates(); initCharts(); cargarDeLocal(); renderTodo(); actualizarCalculos();
             if (!localStorage.getItem('GUIDE_MAESTRA_SEEN')) { renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
             setInterval(getRates, 300000);
