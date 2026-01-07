@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configuración de App Nativa (PWA) -->
-    <link rel="manifest" href="manifest.json?v=30">
+    <link rel="manifest" href="manifest.json?v=35">
     <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -88,34 +88,16 @@
             cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
         }
 
-        /* BARRA MÁGICA DE ENTRADA INTELIGENTE */
+        /* Barra Mágica */
         .magic-input-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 5px 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border);
+            border-radius: 20px; padding: 5px 15px; margin-bottom: 20px;
+            display: flex; align-items: center; gap: 10px;
         }
-        .magic-input {
-            background: transparent; border: none; color: var(--text);
-            padding: 12px 0; font-size: 0.9rem; width: 100%;
-            outline: none; font-weight: 500;
-        }
+        .magic-input { background: transparent; border: none; color: var(--text); padding: 12px 0; font-size: 0.9rem; width: 100%; outline: none; font-weight: 500; }
         .magic-input::placeholder { color: var(--text); opacity: 0.3; }
-        
-        .voice-btn {
-            background: var(--accent); border: none; color: var(--bg-color);
-            width: 32px; height: 32px; border-radius: 12px;
-            font-size: 1rem; cursor: pointer; transition: 0.3s;
-            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .voice-btn.listening {
-            background: var(--col-gas); color: white;
-            animation: pulse 1.5s infinite;
-        }
+        .voice-btn { background: var(--accent); border: none; color: var(--bg-color); width: 32px; height: 32px; border-radius: 12px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .voice-btn.listening { background: var(--col-gas); color: white; animation: pulse 1.5s infinite; }
 
         @keyframes pulse {
             0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
@@ -123,25 +105,9 @@
             100% { transform: scale(1); }
         }
 
-        /* DISEÑO DEL CHAT BOT IA */
-        .ai-chat-btn {
-            position: fixed; bottom: 20px; right: 20px;
-            width: 55px; height: 55px; border-radius: 50%;
-            background: var(--accent); color: var(--bg-color);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-            cursor: pointer; z-index: 100; font-size: 1.5rem;
-        }
-
-        .ai-chat-window {
-            position: fixed; bottom: 85px; right: 20px;
-            width: 320px; height: 450px; border-radius: 25px;
-            background: var(--bg-color); border: 1px solid var(--glass-border);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-            display: none; flex-direction: column; z-index: 100;
-            overflow: hidden; backdrop-filter: blur(20px);
-        }
-
+        /* Chat IA */
+        .ai-chat-btn { position: fixed; bottom: 20px; right: 20px; width: 55px; height: 55px; border-radius: 50%; background: var(--accent); color: var(--bg-color); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; font-size: 1.5rem; }
+        .ai-chat-window { position: fixed; bottom: 85px; right: 20px; width: 320px; height: 450px; border-radius: 25px; background: var(--bg-color); border: 1px solid var(--glass-border); box-shadow: 0 15px 40px rgba(0,0,0,0.5); display: none; flex-direction: column; z-index: 100; overflow: hidden; backdrop-filter: blur(20px); }
         .ai-header { padding: 15px; background: var(--glass); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
         .ai-header span { font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
         .ai-messages { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
@@ -152,33 +118,39 @@
         .ai-input { background: var(--glass); border: none; color: var(--text); padding: 10px; border-radius: 15px; flex-grow: 1; outline: none; font-size: 0.8rem; }
         .ai-send { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; }
 
-        /* Resto de componentes */
         .annual-summary { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 22px; padding: 18px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
         .annual-item span { display: block; font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
         .annual-item b { font-size: 0.85rem; font-weight: 800; letter-spacing: -0.3px; }
+        
         .rates-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
         .rate-card b { font-size: 1rem; font-weight: 700; display: block; margin-bottom: 2px; }
         .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
+
         .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
         .emoji-input { background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0; text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none; padding: 0; cursor: pointer; }
         .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.9rem; font-weight: 500; min-width: 50px; }
+        
         .amount-group { display: flex; flex-direction: column; width: 75px; flex-shrink: 0; }
         .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.95rem; }
         .sync-label { font-size: 0.6rem; opacity: 0.4; text-align: right; display: block; margin-top: 4px; font-weight: 600; }
+        
         .delete-btn { color: var(--text); cursor: pointer; font-size: 1.2rem; opacity: 0.2; padding-left: 5px; transition: 0.2s; }
         .delete-btn:active { opacity: 1; color: var(--col-gas); }
         .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
+        
         .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
         .sobrante-label { display: block; font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; }
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
+
         .tip-box { background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 22px; margin-top: 25px; }
         .tip-box h4 { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; margin: 0 0 5px 0; color: var(--col-ing); letter-spacing: 1px; }
         .tip-box p { font-size: 0.8rem; margin: 0; opacity: 0.8; line-height: 1.4; font-style: italic; }
+        
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
         .chart-label { font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
 
@@ -200,7 +172,7 @@
 </head>
 <body>
 
-    <!-- MODAL DE LA GUÍA INTERACTIVA -->
+    <!-- MODAL DE LA GUIA INTERACTIVA -->
     <div id="guide" class="guide-overlay">
         <div class="guide-content">
             <div class="guide-header">
@@ -213,11 +185,11 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v51.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v55.0</div>
         </div>
     </div>
 
-    <!-- BOTÓN E INTERFAZ DEL CHAT BOT IA -->
+    <!-- BOTÓN E INTERFACE DEL CHAT BOT IA -->
     <div class="ai-chat-btn" onclick="toggleAIChat()" title="Consultar Analista IA">🤖</div>
     <div id="ai-window" class="ai-chat-window">
         <div class="ai-header">
@@ -228,7 +200,7 @@
             <div class="msg msg-ai">¡Hola, Master! Estoy aquí para ayudarte a entender mejor tus finanzas. ¿Qué te gustaría consultar hoy?</div>
         </div>
         <div class="ai-input-area">
-            <input type="text" id="ai-input" class="ai-input" placeholder="Pregúntame sobre tus gastos..." onkeypress="handleAIKey(event)">
+            <input type="text" id="ai-input" class="ai-input" placeholder="Pregúntame sobre tus registros..." onkeypress="handleAIKey(event)">
             <button class="ai-send" onclick="sendToAI()">🚀</button>
         </div>
     </div>
@@ -303,20 +275,24 @@
     </div>
 
     <script>
-        const apiKey = ""; // API Key de Gemini (se inyecta en el entorno de ejecución)
+        const apiKey = ""; 
 
-        // --- CANAL DE COMUNICACIÓN MAESTRA ---
+        // --- CANAL DE COMUNICACIÓN (SYNC) ---
         const syncChannel = new BroadcastChannel('finance_sync_channel');
-        syncChannel.onmessage = (event) => {
-            if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); }
+        syncChannel.onmessage = (event) => { if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } };
+
+        // --- MAPA DE INTELIGENCIA VISUAL (EMOJIS) ---
+        const emojiMap = {
+            'comida': '🍔', 'cena': '🍽️', 'almuerzo': '🍱', 'desayuno': '🍳', 'sushi': '🍣', 'pizza': '🍕',
+            'sueldo': '💵', 'pago': '💰', 'nomina': '💳', 'bono': '🎁', 'renta': '🏠', 'venta': '📈',
+            'transporte': '🚗', 'uber': '🚕', 'gasolina': '⛽', 'bus': '🚌',
+            'ahorro': '🏦', 'reserva': '🔒', 'meta': '🎯',
+            'salud': '💊', 'medicina': '🏥', 'gym': '💪',
+            'ocio': '🎬', 'cine': '🍿', 'fiesta': '🥳'
         };
 
-        // --- MOTOR DE IA (GEMINI ANALYST) ---
-        function toggleAIChat() {
-            const win = document.getElementById('ai-window');
-            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
-        }
-
+        // --- MOTOR DE IA (GEMINI) ---
+        function toggleAIChat() { const win = document.getElementById('ai-window'); win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; }
         function handleAIKey(e) { if (e.key === 'Enter') sendToAI(); }
 
         async function sendToAI() {
@@ -330,21 +306,17 @@
             box.scrollTop = box.scrollHeight;
 
             const loaderId = "ai-loader-" + Date.now();
-            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Revisando tus metas financieras...</div>`;
+            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Analizando tus finanzas...</div>`;
             box.scrollTop = box.scrollHeight;
 
             const context = JSON.stringify(registroAnual);
-            const systemPrompt = `Eres un analista financiero experto para la App Finance Elite Master. 
-            Te comunicas con empatía y profesionalismo. Tienes acceso a los datos financieros que el usuario ha compartido en la App: ${context}. 
-            Tu objetivo es ayudar al usuario a entender sus gastos, ingresos y ahorros, proporcionando resúmenes y consejos constructivos. 
-            No eres intrusivo, eres un aliado en su crecimiento económico. 
-            El mes actual es ${mesActual}.`;
+            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Ayuda al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde siempre basándote en los datos reales del JSON.`;
 
             try {
                 const response = await callGeminiAI(query, systemPrompt);
                 document.getElementById(loaderId).innerText = response;
-            } catch (error) {
-                document.getElementById(loaderId).innerText = "Lo siento, Master. Tuve un problema técnico momentáneo. ¿Podrías intentar de nuevo?";
+            } catch (error) { 
+                document.getElementById(loaderId).innerText = "Hubo un problema de conexión. Por favor, intenta de nuevo."; 
             }
             box.scrollTop = box.scrollHeight;
         }
@@ -362,6 +334,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+                
+                if (!response.ok) throw new Error("API Error");
+                
                 const result = await response.json();
                 return result.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar una respuesta.";
             } catch (error) {
@@ -377,70 +352,113 @@
         // --- MOTOR DE VOZ ---
         function startVoiceRecognition() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) { enviarNotificacionCambio("Voz No Soportada 🎙️", "Tu navegador no permite entrada por voz."); return; }
+            if (!SpeechRecognition) { return; }
             const recognition = new SpeechRecognition();
             const voiceBtn = document.getElementById('voice-btn');
             const input = document.getElementById('magic-bar');
             recognition.lang = 'es-ES';
-            recognition.onstart = () => { voiceBtn.classList.add('listening'); input.placeholder = "Escuchando..."; };
-            recognition.onresult = (event) => { input.value = event.results[0][0].transcript; processMagicInput(); };
-            recognition.onerror = () => { voiceBtn.classList.remove('listening'); };
-            recognition.onend = () => { voiceBtn.classList.remove('listening'); if (!input.value) input.placeholder = "Di: 'Cena 500'..."; };
+            recognition.onstart = () => { voiceBtn.classList.add('listening'); };
+            recognition.onresult = (event) => { 
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
+                processMagicInput(true); // Indica que viene de VOZ
+            };
+            recognition.onend = () => { voiceBtn.classList.remove('listening'); };
             recognition.start();
         }
 
-        // --- MOTOR MÁGICO ---
-        function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(); }
-        function processMagicInput() {
+        // --- MOTOR MÁGICO (AUTOMATIZACIÓN) ---
+        function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(false); }
+
+        function processMagicInput(isVoice = false) {
             const input = document.getElementById('magic-bar');
             const val = input.value.trim();
             if (!val) return;
+
             const parts = val.split(" ");
-            let monto = 0; let concepto = "";
+            let monto = 0;
+            let palabras = [];
+
             parts.forEach(p => {
                 const num = parseFloat(p.replace(",", "."));
                 if (!isNaN(num) && num > 0) monto = num;
-                else concepto += (concepto ? " " : "") + p;
+                else if (p.length > 2) palabras.push(p.toLowerCase());
             });
-            if (monto === 0) { enviarNotificacionCambio("Formato Incorrecto ⚠️", "Escribe concepto y monto."); return; }
+
+            if (monto === 0) return;
+
+            // Extraer Keyword (la palabra más larga o descriptiva)
+            palabras.sort((a,b) => b.length - a.length);
+            const keyword = palabras[0] || "Registro";
+            
+            // Asignar Emoji Automático
+            let emoji = "📝";
+            for (const [key, val] of Object.entries(emojiMap)) {
+                if (keyword.includes(key)) { emoji = val; break; }
+            }
+
             let tipo = 'gastos'; 
-            const inKey = ['pago', 'sueldo', 'nomina', 'bono', 'renta', 'venta', 'ingreso', 'trabajo', 'cobro'];
-            const ahKey = ['ahorro', 'reserva', 'fondo', 'banco', 'guardar', 'meta'];
-            const textLower = concepto.toLowerCase();
-            if (inKey.some(k => textLower.includes(k))) tipo = 'ingresos';
-            else if (ahKey.some(k => textLower.includes(k))) tipo = 'ahorros';
-            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' };
+            const inKey = ['pago', 'sueldo', 'nomina', 'bono', 'renta', 'venta', 'ingreso', 'trabajo'];
+            const ahKey = ['ahorro', 'reserva', 'fondo', 'banco', 'guardar'];
+
+            if (inKey.some(k => keyword.includes(k))) tipo = 'ingresos';
+            else if (ahKey.some(k => keyword.includes(k))) tipo = 'ahorros';
+
+            const tVal = rates[tasaSeleccionada];
+            let itemData = { icono: emoji, desc: keyword.charAt(0).toUpperCase() + keyword.slice(1) };
+
+            // REGLA: Si es VOZ -> El monto es USD. Si es TEXTO -> El monto es BS.
+            if (isVoice) {
+                itemData.usd = monto;
+                itemData.bs = (monto * tVal).toFixed(2);
+            } else {
+                itemData.bs = monto;
+                itemData.usd = (monto / tVal).toFixed(2);
+            }
+
             if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
-            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: concepto, bs: monto, usd: (monto/rates[tasaSeleccionada]).toFixed(2) });
-            input.value = ""; renderTodo(); actualizarCalculos();
-            enviarNotificacionCambio("Entrada Registrada ✅", `Guardado en ${tipo}.`);
+            registroAnual[mesActual][tipo].push(itemData);
+            
+            input.value = "";
+            renderTodo();
+            actualizarCalculos();
+            enviarNotificacionCambio("Registrado ✅", `Guardado como ${isVoice ? '$' : 'Bs'} en ${tipo}.`);
         }
 
-        const tips = [
-            "Si te sobra dinero, prioriza un fondo de emergencia.",
-            "Invierte el sobrante en activos que generen dividendos.",
-            "¿Dólares o Bolívares? Protege tu poder de compra.",
-            "Usa la regla 50/30/20 como base financiera.",
-            "Pequeños ahorros hoy son grandes libertades mañana."
-        ];
+        // --- UI E LISTAS ---
+        function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
+        
+        function renderLista(tipo, id) { 
+            const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
+            data.forEach((item, i) => { 
+                const div = document.createElement('div'); div.className = "entry-card"; 
+                div.innerHTML = `<div class="entry-row">
+                    <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
+                    <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
+                    <div class="amount-group">
+                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)">
+                        <span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
+                    </div>
+                    <div class="amount-group" style="margin-left:5px;">
+                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)">
+                        <span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span>
+                    </div>
+                    <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
+                </div>`; 
+                lista.appendChild(div); 
+            }); 
+        }
+
+        const tips = ["Prioriza tu ahorro.", "Dólares protegen tu valor.", "Evita los gastos hormiga.", "Usa la regla 50/30/20."];
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
+        function enviarNotificacionCambio(titulo, cuerpo) { if (Notification.permission === "granted") { new Notification(titulo, { body: cuerpo, icon: "logo.png" }); } syncChannel.postMessage('sync_required'); }
 
-        function enviarNotificacionCambio(titulo, cuerpo) {
-            if (Notification.permission === "granted") { new Notification(titulo, { body: cuerpo, icon: "logo.png" }); }
-            syncChannel.postMessage('sync_required');
-        }
-
-        // --- GUÍA ---
+        // --- GUIA ---
         let currentStep = 0;
         const guideSteps = [
-            { title: "Bienvenido a la App", icon: "📱", text: "Ahora Finance Elite Master es una App completa. Instálala en tu pantalla de inicio para una experiencia inmersiva." },
-            { title: "Analista IA 🤖", icon: "🧠", text: "Toca el icono del robot en la esquina inferior para hablar con tu analista personal. Él te ayudará a entender tu flujo de dinero." },
-            { title: "Entrada Inteligente ✨", icon: "⚡", text: "Escribe o usa el micrófono para registrar tus movimientos rápido. La App detecta la categoría sola." },
-            { title: "Gestión por Meses", icon: "📅", text: "Navega entre meses. Cada mes es independiente y preciso." },
-            { title: "Resumen Anual", icon: "🌍", text: "Controla tus acumulados de todo el año en una sola vista." },
-            { title: "Temas Visuales", icon: "🎨", text: "Cambia entre Modo Oscuro o Claro con un toque." },
-            { title: "Categorías Maestras", icon: "📂", text: "Define Ingresos, Gastos y Ahorros de forma granular." },
-            { title: "Gráficos de Poder", icon: "📊", text: "Analiza tu Salud Financiera mes a mes con visualizaciones inteligentes." }
+            { title: "Bienvenido", icon: "📱", text: "Tu estación financiera personal." },
+            { title: "Voz en Dólares 🎙️", icon: "💰", text: "Habla por el micro: 'Pizza 15'. La App detectará que son <b>$15</b>, buscará el emoji 🍕 y pondrá 'Pizza' como keyword." },
+            { title: "Analista IA 🤖", icon: "🧠", text: "Toca el robot para hablar con tu consultor. Ahora es más inteligente y rápido." }
         ];
 
         function renderGuideStep() {
@@ -452,31 +470,17 @@
             body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p></div>`;
             counter.innerText = `PASO ${currentStep + 1} DE ${guideSteps.length}`;
             btnPrev.style.display = currentStep === 0 ? 'none' : 'block';
-            btnNext.innerText = currentStep === guideSteps.length - 1 ? 'LISTO PARA EMPEZAR' : 'SIGUIENTE';
+            btnNext.innerText = currentStep === guideSteps.length - 1 ? '¡EMPEZAR!' : 'SIGUIENTE';
         }
+        function changeStep(delta) { currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
+        function finishGuide() { document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
 
-        function changeStep(delta) { solicitarPermisoAutomatico(); currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
-        function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
-        function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
-
-        // --- SERVICE WORKER ---
-        if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    try { reg.update(); } catch(e) {}
-                });
-            });
-            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } });
-        }
-
+        // --- CORE ---
         const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
         let rates = { bcv: 1, usdt: 1 };
         let tasaSeleccionada = 'bcv';
         let monedaAnual = 'bs';
-        let notifActivas = false;
-        let ultimaNotifDate = null;
         let barChart, doughnutChart, lineChart;
-        
         const fmtBs = new Intl.NumberFormat('es-VE', { maximumFractionDigits: 0 });
         const fmtUsd = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         const fmtFull = new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2 });
@@ -494,27 +498,25 @@
             setInterval(getRates, 300000);
         }
 
-        function solicitarPermisoAutomatico() {
-            if (!("Notification" in window)) return;
-            if (Notification.permission === "default") { Notification.requestPermission(); }
-        }
-
         function setMonedaAnual(m) { monedaAnual = m; document.getElementById('cur-bs').classList.toggle('active', m === 'bs'); document.getElementById('cur-usd').classList.toggle('active', m === 'usd'); actualizarCalculos(); }
         async function getRates() { try { const r = await fetch('https://ve.dolarapi.com/v1/dolares'); const d = await r.json(); rates.bcv = d.find(x => x.nombre === "Oficial").promedio; rates.usdt = d.find(x => x.nombre === "Paralelo").promedio; document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2); document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2); actualizarCalculos(); } catch (e) {} }
         function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
         function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); renderTodo(); actualizarCalculos(); }
-        function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
-        function renderLista(tipo, id) { 
-            const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
-            data.forEach((item, i) => { 
-                const div = document.createElement('div'); div.className = "entry-card"; 
-                div.innerHTML = `<div class="entry-row"><input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)"><input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)"><div class="amount-group"><input type="number" class="amount-input" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)"><span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span></div><div class="amount-group" style="margin-left:5px;"><input type="number" class="amount-input" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)"><span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span></div><span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span></div>`; 
-                lista.appendChild(div); 
-            }); 
+        
+        function sync(tipo, idx, origen, valor) { 
+            const tVal = rates[tasaSeleccionada]; 
+            const item = registroAnual[mesActual][tipo][idx]; 
+            const num = parseFloat(valor) || 0; 
+            if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); document.getElementById(`${tipo}-usd-${idx}`).value = item.usd; } 
+            else { item.usd = num; item.bs = (num * tVal).toFixed(2); document.getElementById(`${tipo}-bs-${idx}`).value = item.bs; } 
+            document.getElementById(`${tipo}-label-usd-${idx}`).innerText = `$ ${(item.bs/tVal).toFixed(2)}`;
+            document.getElementById(`${tipo}-label-bs-${idx}`).innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
+            actualizarCalculos(); 
         }
-        function sync(tipo, idx, origen, valor) { const tVal = rates[tasaSeleccionada]; const item = registroAnual[mesActual][tipo][idx]; const num = parseFloat(valor) || 0; if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); } else { item.usd = num; item.bs = (num * tVal).toFixed(2); } actualizarCalculos(); }
-        function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = v; actualizarCalculos(); }
+
+        function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = (c === 'bs' || c === 'usd') ? parseFloat(v) || 0 : v; actualizarCalculos(); }
         function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
+
         function actualizarCalculos() {
             const tVal = rates[tasaSeleccionada];
             const saldosMensuales = meses.map(m => { if (!registroAnual[m]) return 0; const i = (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const g = (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const a = (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); return i - g - a; });
@@ -530,8 +532,8 @@
         }
         function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
-        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
-        function cargarDeLocal() { let store = localStorage.getItem(STORAGE_KEY); if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; notifActivas = obj.notifActivas || false; ultimaNotifDate = obj.ultimaNotifDate || null; setMonedaAnual(monedaAnual); } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } }
+        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual })); }
+        function cargarDeLocal() { let store = localStorage.getItem(STORAGE_KEY); if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; setMonedaAnual(monedaAnual); } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } }
         function initCharts() { 
             const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff'; 
             barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 9 } }, grid: { display: false } } } } }); 
