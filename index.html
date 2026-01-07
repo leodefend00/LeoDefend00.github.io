@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- Configuración PWA y Logotipos Blindados para Android e iOS -->
-    <link rel="manifest" href="manifest.json?v=24">
+    <!-- Configuración de App Nativa (PWA) -->
+    <link rel="manifest" href="manifest.json?v=30">
     <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Finance Elite">
 
-    <title>Finance Elite Master - Universal Sync</title>
+    <title>Finance Elite Master - AI Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -54,20 +54,18 @@
             width: 92%; max-width: 420px; padding: 22px 18px; margin: 10px auto;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             align-self: flex-start;
-            position: relative;
-            overflow: hidden;
         }
 
         .header-row { 
             display: flex; justify-content: space-between; align-items: center; 
-            margin-bottom: 15px; gap: 4px; width: 100%;
+            margin-bottom: 15px; gap: 5px; width: 100%;
         }
         
         .month-select { 
             background: transparent; border: none; color: var(--accent); 
-            font-size: 1.3rem; font-weight: 850; text-transform: uppercase; 
+            font-size: 1.4rem; font-weight: 850; text-transform: uppercase; 
             outline: none; flex-grow: 1; letter-spacing: -1px;
-            max-width: 45%; text-overflow: ellipsis;
+            max-width: 55%; text-overflow: ellipsis;
         }
 
         .currency-toggle { 
@@ -76,7 +74,7 @@
         }
         
         .cur-btn { 
-            font-size: 0.55rem; padding: 5px 6px; border-radius: 9px; cursor: pointer; 
+            font-size: 0.55rem; padding: 5px 8px; border-radius: 9px; cursor: pointer; 
             font-weight: 800; color: var(--text); opacity: 0.3; 
         }
         .cur-btn.active { background: var(--accent); color: var(--bg-color); opacity: 1; }
@@ -85,34 +83,88 @@
         
         .theme-btn, .refresh-btn { 
             background: var(--glass); border: 1px solid var(--glass-border); 
-            color: var(--text); width: 34px; height: 34px; border-radius: 50%; 
+            color: var(--text); width: 36px; height: 36px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 0.85rem; flex-shrink: 0;
+            cursor: pointer; font-size: 0.9rem; flex-shrink: 0;
         }
 
-        .annual-summary {
-            background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);
-            border-radius: 22px; padding: 18px; margin-bottom: 20px;
-            display: flex; justify-content: space-around; text-align: center;
+        /* BARRA MÁGICA DE ENTRADA INTELIGENTE */
+        .magic-input-container {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 5px 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
+        .magic-input {
+            background: transparent; border: none; color: var(--text);
+            padding: 12px 0; font-size: 0.9rem; width: 100%;
+            outline: none; font-weight: 500;
+        }
+        .magic-input::placeholder { color: var(--text); opacity: 0.3; }
+        
+        .voice-btn {
+            background: var(--accent); border: none; color: var(--bg-color);
+            width: 32px; height: 32px; border-radius: 12px;
+            font-size: 1rem; cursor: pointer; transition: 0.3s;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .voice-btn.listening {
+            background: var(--col-gas); color: white;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.4); }
+            70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+            100% { transform: scale(1); }
+        }
+
+        /* DISEÑO DEL CHAT BOT IA */
+        .ai-chat-btn {
+            position: fixed; bottom: 20px; right: 20px;
+            width: 55px; height: 55px; border-radius: 50%;
+            background: var(--accent); color: var(--bg-color);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            cursor: pointer; z-index: 100; font-size: 1.5rem;
+        }
+
+        .ai-chat-window {
+            position: fixed; bottom: 85px; right: 20px;
+            width: 320px; height: 450px; border-radius: 25px;
+            background: var(--bg-color); border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+            display: none; flex-direction: column; z-index: 100;
+            overflow: hidden; backdrop-filter: blur(20px);
+        }
+
+        .ai-header { padding: 15px; background: var(--glass); border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .ai-header span { font-weight: 800; font-size: 0.8rem; letter-spacing: 1px; }
+        .ai-messages { flex-grow: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; line-height: 1.4; }
+        .msg-ai { align-self: flex-start; background: var(--glass); border: 1px solid var(--glass-border); }
+        .msg-user { align-self: flex-end; background: var(--accent); color: var(--bg-color); font-weight: 500; }
+        .ai-input-area { padding: 10px; display: flex; gap: 8px; border-top: 1px solid var(--glass-border); }
+        .ai-input { background: var(--glass); border: none; color: var(--text); padding: 10px; border-radius: 15px; flex-grow: 1; outline: none; font-size: 0.8rem; }
+        .ai-send { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; }
+
+        /* Resto de componentes */
+        .annual-summary { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 22px; padding: 18px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
         .annual-item span { display: block; font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
         .annual-item b { font-size: 0.85rem; font-weight: 800; letter-spacing: -0.3px; }
-
         .rates-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
         .rate-card b { font-size: 1rem; font-weight: 700; display: block; margin-bottom: 2px; }
         .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
-
         .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
-        
-        .emoji-input { 
-            background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0;
-            text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none; padding: 0; cursor: pointer;
-        }
-        
+        .emoji-input { background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0; text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none; padding: 0; cursor: pointer; }
         .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.9rem; font-weight: 500; min-width: 50px; }
         .amount-group { display: flex; flex-direction: column; width: 75px; flex-shrink: 0; }
         .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.95rem; }
@@ -120,45 +172,28 @@
         .delete-btn { color: var(--text); cursor: pointer; font-size: 1.2rem; opacity: 0.2; padding-left: 5px; transition: 0.2s; }
         .delete-btn:active { opacity: 1; color: var(--col-gas); }
         .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
-        
         .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
         .sobrante-label { display: block; font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; }
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
-
-        .tip-box {
-            background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2);
-            padding: 15px; border-radius: 22px; margin-top: 25px;
-        }
+        .tip-box { background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 22px; margin-top: 25px; }
         .tip-box h4 { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; margin: 0 0 5px 0; color: var(--col-ing); letter-spacing: 1px; }
         .tip-box p { font-size: 0.8rem; margin: 0; opacity: 0.8; line-height: 1.4; font-style: italic; }
-        
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
         .chart-label { font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
 
-        .guide-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.92); backdrop-filter: blur(20px);
-            z-index: 1000; display: none; overflow-y: auto; padding: 40px 20px;
-        }
+        .guide-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(20px); z-index: 1000; display: none; overflow-y: auto; padding: 40px 20px; }
         .guide-content { max-width: 500px; margin: 0 auto; color: #fff; padding-bottom: 60px; text-align: center; position: relative; }
         .guide-header { margin-bottom: 30px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 20px; position: relative; }
         .guide-title { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 5px; }
         .guide-step-counter { font-size: 0.65rem; font-weight: 800; opacity: 0.5; text-transform: uppercase; letter-spacing: 2px; }
-        .guide-close-x {
-            position: absolute; top: -10px; right: 0; width: 35px; height: 35px;
-            background: rgba(255,255,255,0.1); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer;
-        }
+        .guide-close-x { position: absolute; top: -10px; right: 0; width: 35px; height: 35px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; }
         .guide-body { min-height: 220px; display: flex; flex-direction: column; justify-content: center; }
         .guide-section { margin-bottom: 25px; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); text-align: left; }
         .guide-section h3 { font-size: 1.2rem; margin-top: 0; color: var(--col-aho); display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
         .guide-section p { font-size: 0.92rem; opacity: 0.85; line-height: 1.7; margin-bottom: 0; }
-        .install-step-list { list-style: none; padding: 0; margin-top: 15px; }
-        .install-step-list li { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; font-size: 0.85rem; opacity: 0.9; }
-        .step-badge { background: var(--accent); color: #000; width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.7rem; }
         .guide-footer { display: flex; gap: 10px; margin-top: 20px; }
-        .guide-btn { flex: 1; padding: 15px; border-radius: 18px; font-weight: 800; font-size: 0.9rem; cursor: pointer; border: none; transition: 0.2s; }
+        .guide-btn { flex: 1; padding: 15px; border-radius: 18px; font-weight: 800; font-size: 0.9rem; cursor: pointer; border: none; }
         .btn-next { background: var(--col-aho); color: #000; }
         .btn-prev { background: rgba(255,255,255,0.1); color: #fff; }
     </style>
@@ -171,14 +206,30 @@
             <div class="guide-header">
                 <div class="guide-close-x" onclick="finishGuide()">✕</div>
                 <div class="guide-title">GUÍA MAESTRA</div>
-                <div id="step-counter" class="guide-step-counter">PASO 1 DE 9</div>
+                <div id="step-counter" class="guide-step-counter">PASO 1 DE 8</div>
             </div>
             <div id="guide-body" class="guide-body"></div>
             <div class="guide-footer">
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v44.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v51.0</div>
+        </div>
+    </div>
+
+    <!-- BOTÓN E INTERFAZ DEL CHAT BOT IA -->
+    <div class="ai-chat-btn" onclick="toggleAIChat()" title="Consultar Analista IA">🤖</div>
+    <div id="ai-window" class="ai-chat-window">
+        <div class="ai-header">
+            <span>ANALISTA ELITE IA</span>
+            <div style="cursor:pointer" onclick="toggleAIChat()">✕</div>
+        </div>
+        <div id="ai-messages" class="ai-messages">
+            <div class="msg msg-ai">¡Hola, Master! Estoy aquí para ayudarte a entender mejor tus finanzas. ¿Qué te gustaría consultar hoy?</div>
+        </div>
+        <div class="ai-input-area">
+            <input type="text" id="ai-input" class="ai-input" placeholder="Pregúntame sobre tus gastos..." onkeypress="handleAIKey(event)">
+            <button class="ai-send" onclick="sendToAI()">🚀</button>
         </div>
     </div>
 
@@ -193,6 +244,12 @@
                 <button class="refresh-btn" onclick="location.reload()" title="Refrescar">🔄</button>
                 <button class="theme-btn" onclick="toggleTheme()">🌗</button>
             </div>
+        </div>
+
+        <!-- BARRA MÁGICA AUTOMÁTICA CON VOZ -->
+        <div class="magic-input-container">
+            <input type="text" id="magic-bar" class="magic-input" placeholder="Di o escribe: 'Cena 500'..." onkeypress="handleMagicKey(event)">
+            <button id="voice-btn" class="voice-btn" onclick="startVoiceRecognition()" title="Hablar">🎙️</button>
         </div>
 
         <div class="annual-summary">
@@ -235,7 +292,7 @@
         </div>
         
         <div class="chart-box" style="height: 220px;">
-            <span class="chart-label">Análisis de Capital</span>
+            <span class="chart-label">¿En qué se va tu dinero?</span>
             <canvas id="doughnutChart"></canvas>
         </div>
 
@@ -246,49 +303,144 @@
     </div>
 
     <script>
-        // --- CANAL DE COMUNICACIÓN MAESTRA (INTER-TAB SYNC) ---
+        const apiKey = ""; // API Key de Gemini (se inyecta en el entorno de ejecución)
+
+        // --- CANAL DE COMUNICACIÓN MAESTRA ---
         const syncChannel = new BroadcastChannel('finance_sync_channel');
         syncChannel.onmessage = (event) => {
-            if (event.data === 'sync_required') {
-                cargarDeLocal();
-                renderTodo();
-                actualizarCalculos();
-                console.log("Sincronización de canal completada.");
-            }
+            if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); }
         };
 
+        // --- MOTOR DE IA (GEMINI ANALYST) ---
+        function toggleAIChat() {
+            const win = document.getElementById('ai-window');
+            win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function handleAIKey(e) { if (e.key === 'Enter') sendToAI(); }
+
+        async function sendToAI() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-messages');
+            const query = input.value.trim();
+            if (!query) return;
+
+            box.innerHTML += `<div class="msg msg-user">${query}</div>`;
+            input.value = "";
+            box.scrollTop = box.scrollHeight;
+
+            const loaderId = "ai-loader-" + Date.now();
+            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Revisando tus metas financieras...</div>`;
+            box.scrollTop = box.scrollHeight;
+
+            const context = JSON.stringify(registroAnual);
+            const systemPrompt = `Eres un analista financiero experto para la App Finance Elite Master. 
+            Te comunicas con empatía y profesionalismo. Tienes acceso a los datos financieros que el usuario ha compartido en la App: ${context}. 
+            Tu objetivo es ayudar al usuario a entender sus gastos, ingresos y ahorros, proporcionando resúmenes y consejos constructivos. 
+            No eres intrusivo, eres un aliado en su crecimiento económico. 
+            El mes actual es ${mesActual}.`;
+
+            try {
+                const response = await callGeminiAI(query, systemPrompt);
+                document.getElementById(loaderId).innerText = response;
+            } catch (error) {
+                document.getElementById(loaderId).innerText = "Lo siento, Master. Tuve un problema técnico momentáneo. ¿Podrías intentar de nuevo?";
+            }
+            box.scrollTop = box.scrollHeight;
+        }
+
+        async function callGeminiAI(userQuery, systemPrompt, retries = 0) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] }
+            };
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                return result.candidates?.[0]?.content?.parts?.[0]?.text || "No pude generar una respuesta.";
+            } catch (error) {
+                if (retries < 5) {
+                    const delay = Math.pow(2, retries) * 1000;
+                    await new Promise(res => setTimeout(res, delay));
+                    return callGeminiAI(userQuery, systemPrompt, retries + 1);
+                }
+                throw error;
+            }
+        }
+
+        // --- MOTOR DE VOZ ---
+        function startVoiceRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { enviarNotificacionCambio("Voz No Soportada 🎙️", "Tu navegador no permite entrada por voz."); return; }
+            const recognition = new SpeechRecognition();
+            const voiceBtn = document.getElementById('voice-btn');
+            const input = document.getElementById('magic-bar');
+            recognition.lang = 'es-ES';
+            recognition.onstart = () => { voiceBtn.classList.add('listening'); input.placeholder = "Escuchando..."; };
+            recognition.onresult = (event) => { input.value = event.results[0][0].transcript; processMagicInput(); };
+            recognition.onerror = () => { voiceBtn.classList.remove('listening'); };
+            recognition.onend = () => { voiceBtn.classList.remove('listening'); if (!input.value) input.placeholder = "Di: 'Cena 500'..."; };
+            recognition.start();
+        }
+
+        // --- MOTOR MÁGICO ---
+        function handleMagicKey(e) { if (e.key === 'Enter') processMagicInput(); }
+        function processMagicInput() {
+            const input = document.getElementById('magic-bar');
+            const val = input.value.trim();
+            if (!val) return;
+            const parts = val.split(" ");
+            let monto = 0; let concepto = "";
+            parts.forEach(p => {
+                const num = parseFloat(p.replace(",", "."));
+                if (!isNaN(num) && num > 0) monto = num;
+                else concepto += (concepto ? " " : "") + p;
+            });
+            if (monto === 0) { enviarNotificacionCambio("Formato Incorrecto ⚠️", "Escribe concepto y monto."); return; }
+            let tipo = 'gastos'; 
+            const inKey = ['pago', 'sueldo', 'nomina', 'bono', 'renta', 'venta', 'ingreso', 'trabajo', 'cobro'];
+            const ahKey = ['ahorro', 'reserva', 'fondo', 'banco', 'guardar', 'meta'];
+            const textLower = concepto.toLowerCase();
+            if (inKey.some(k => textLower.includes(k))) tipo = 'ingresos';
+            else if (ahKey.some(k => textLower.includes(k))) tipo = 'ahorros';
+            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' };
+            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
+            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: concepto, bs: monto, usd: (monto/rates[tasaSeleccionada]).toFixed(2) });
+            input.value = ""; renderTodo(); actualizarCalculos();
+            enviarNotificacionCambio("Entrada Registrada ✅", `Guardado en ${tipo}.`);
+        }
+
         const tips = [
-            "Si te sobra dinero, prioriza un fondo de emergencia de al menos 3 meses.",
-            "Invierte el sobrante en activos que generen dividendos o rentas.",
-            "¿Dólares o Bolívares? El sobrante en moneda fuerte protege tu poder de compra.",
-            "No gastes lo que te sobra, inviértelo en educación que aumente tus ingresos.",
-            "Usa la regla 50/30/20: el 20% de tus ingresos debería ser siempre ahorro.",
-            "Pequeños ahorros hoy son grandes libertades mañana. Evita los gastos hormiga.",
-            "Si ya tienes ahorros, considera diversificar para mitigar riesgos inflacionarios.",
-            "El mejor momento para ahorrar fue ayer, el segundo mejor es con este sobrante.",
-            "Evita deudas de consumo; si te sobra dinero, paga primero tus créditos pendientes."
+            "Si te sobra dinero, prioriza un fondo de emergencia.",
+            "Invierte el sobrante en activos que generen dividendos.",
+            "¿Dólares o Bolívares? Protege tu poder de compra.",
+            "Usa la regla 50/30/20 como base financiera.",
+            "Pequeños ahorros hoy son grandes libertades mañana."
         ];
         let selectedTip = tips[Math.floor(Math.random() * tips.length)];
 
         function enviarNotificacionCambio(titulo, cuerpo) {
-            if (Notification.permission === "granted") {
-                new Notification(titulo, { body: cuerpo, icon: "logo.png" });
-            }
-            // Enviar señal a otras ventanas
+            if (Notification.permission === "granted") { new Notification(titulo, { body: cuerpo, icon: "logo.png" }); }
             syncChannel.postMessage('sync_required');
         }
 
+        // --- GUÍA ---
         let currentStep = 0;
         const guideSteps = [
-            { title: "Bienvenido", icon: "💼", text: "Finance Elite Master es tu estación de control patrimonial. Está diseñada para darte claridad absoluta sobre tu dinero en el entorno económico actual. Vamos a enseñarte cómo dominarla." },
-            { title: "Instalar como App 📱", icon: "📲", text: "Lleva tu gestión a otro nivel convirtiendo esta web en una App de escritorio o móvil sin ocupar espacio:", install: true },
-            { title: "Gestión por Meses", icon: "📅", text: "La app se organiza por meses. Usa el selector superior para viajar en el tiempo. Cada mes es independiente, permitiéndote planificar el futuro o auditar el pasado con precisión." },
-            { title: "Resumen Anual", icon: "🌍", text: "Justo debajo del mes verás los acumulados de TODO el año. Esta herramienta suma tus ingresos, gastos y ahorros totales para que veas el 'Big Picture' de tu progreso financiero." },
-            { title: "Temas y Colores", icon: "🎨", text: "Personaliza tu experiencia visual con el botón 🌗. Cambia instantáneamente entre el Modo Oscuro o el Modo Claro." },
-            { title: "Divisas y Tasas", icon: "💰", text: "Cambia la vista anual entre BS y USD con un toque. Además, puedes elegir entre la tasa del BCV o el Paralelo; la app recalculará todas tus listas automáticamente al valor real." },
-            { title: "Categorías de Tipo", icon: "📂", text: "Define en los menús según tus necesidades:<br><br><b style='color: var(--col-ing);'>+ Ingresos:</b> Dinero que entra.<br><br><b style='color: var(--col-gas);'>- Gastos:</b> Dinero que sale.<br><br><b style='color: var(--col-aho);'>🏦 Ahorros:</b> Tu capital de reserva blindado.", isCategory: true },
-            { title: "Gráficos y Sobrante", icon: "📊", text: "Analiza tu **Dinero Sobrante** visualmente:<br><br>📊 **Barras:** Mira cuál registro pesa más.<br><br>🍩 **Dona:** Muestra tu **Sobrante Real** frente a tus gastos.<br><br>📈 **Salud del Bolsillo:** Rastrea si tu dinero sobrante crece mes a mes." },
-            { title: "Personalización Total", icon: "✨", text: "Toca cualquier emoji para cambiarlo, edita nombres y escribe montos con fluidez. Tus datos se guardan solos y jamás se perderán. ¡Es hora de empezar!" }
+            { title: "Bienvenido a la App", icon: "📱", text: "Ahora Finance Elite Master es una App completa. Instálala en tu pantalla de inicio para una experiencia inmersiva." },
+            { title: "Analista IA 🤖", icon: "🧠", text: "Toca el icono del robot en la esquina inferior para hablar con tu analista personal. Él te ayudará a entender tu flujo de dinero." },
+            { title: "Entrada Inteligente ✨", icon: "⚡", text: "Escribe o usa el micrófono para registrar tus movimientos rápido. La App detecta la categoría sola." },
+            { title: "Gestión por Meses", icon: "📅", text: "Navega entre meses. Cada mes es independiente y preciso." },
+            { title: "Resumen Anual", icon: "🌍", text: "Controla tus acumulados de todo el año en una sola vista." },
+            { title: "Temas Visuales", icon: "🎨", text: "Cambia entre Modo Oscuro o Claro con un toque." },
+            { title: "Categorías Maestras", icon: "📂", text: "Define Ingresos, Gastos y Ahorros de forma granular." },
+            { title: "Gráficos de Poder", icon: "📊", text: "Analiza tu Salud Financiera mes a mes con visualizaciones inteligentes." }
         ];
 
         function renderGuideStep() {
@@ -297,56 +449,27 @@
             const counter = document.getElementById('step-counter');
             const btnPrev = document.getElementById('btn-prev');
             const btnNext = document.getElementById('btn-next');
-            if (step.install) {
-                body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p><ul class="install-step-list"><li><span class="step-badge">1</span> <b>iPhone:</b> Toca "Compartir" y selecciona <b>"Agregar al inicio"</b>.</li><li><span class="step-badge">2</span> <b>Android:</b> Toca los 3 puntos y elige <b>"Instalar aplicación"</b>.</li><li><span class="step-badge">3</span> <b>PC:</b> Dale a <b>"Instalar"</b> en la barra de direcciones.</li></ul></div>`;
-            } else {
-                body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p></div>`;
-            }
+            body.innerHTML = `<div class="guide-section"><h3>${step.icon} ${step.title}</h3><p>${step.text}</p></div>`;
             counter.innerText = `PASO ${currentStep + 1} DE ${guideSteps.length}`;
             btnPrev.style.display = currentStep === 0 ? 'none' : 'block';
-            btnNext.innerText = currentStep === guideSteps.length - 1 ? 'EMPEZAR AHORA' : 'SIGUIENTE';
+            btnNext.innerText = currentStep === guideSteps.length - 1 ? 'LISTO PARA EMPEZAR' : 'SIGUIENTE';
         }
+
         function changeStep(delta) { solicitarPermisoAutomatico(); currentStep += delta; if (currentStep >= guideSteps.length) { finishGuide(); } else { renderGuideStep(); } }
         function finishGuide() { solicitarPermisoAutomatico(); document.getElementById('guide').style.display = 'none'; localStorage.setItem('GUIDE_MAESTRA_SEEN', 'true'); }
         function openGuide() { currentStep = 0; renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
 
+        // --- SERVICE WORKER ---
         if ('serviceWorker' in navigator && window.location.protocol.startsWith('http') && window.location.origin !== 'null') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').then(reg => {
                     try { reg.update(); } catch(e) {}
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        newWorker.addEventListener('statechange', () => {
-                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) { window.location.reload(); }
-                        });
-                    });
-                }).catch(() => {});
+                });
             });
-
-            document.addEventListener('visibilitychange', () => {
-                if (document.visibilityState === 'visible') {
-                    navigator.serviceWorker.getRegistration().then(reg => { if (reg) reg.update(); });
-                    cargarDeLocal();
-                    renderTodo();
-                    actualizarCalculos();
-                    console.log("Foco recuperado: Sincronizando datos...");
-                }
-            });
-            navigator.serviceWorker.addEventListener('controllerchange', () => window.location.reload());
+            document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } });
         }
 
-        window.addEventListener('storage', (e) => {
-            if (e.key === STORAGE_KEY) {
-                cargarDeLocal();
-                renderTodo();
-                actualizarCalculos();
-                enviarNotificacionCambio("Sincronización Exitosa 🔄", "Los datos se han actualizado desde otro dispositivo.");
-            }
-        });
-
         const STORAGE_KEY = 'FINANCE_ELITE_MASTER_DATA_PERMANENT'; 
-        const OLD_KEYS = ['FINANCE_ELITE_DATA_FINAL', 'FINANCE_MASTER_PRO_V33', 'FINANCE_MASTER_PERMANENT_DATA'];
-
         let rates = { bcv: 1, usdt: 1 };
         let tasaSeleccionada = 'bcv';
         let monedaAnual = 'bs';
@@ -366,162 +489,65 @@
             meses.forEach(m => { let o = document.createElement('option'); o.value = m; o.text = m.toUpperCase(); selector.appendChild(o); });
             selector.value = mesActual;
             document.getElementById('dynamic-tip').innerText = selectedTip;
-            await getRates();
-            initCharts();
-            cargarDeLocal();
-            renderTodo();
-            actualizarCalculos();
+            await getRates(); initCharts(); cargarDeLocal(); renderTodo(); actualizarCalculos();
             if (!localStorage.getItem('GUIDE_MAESTRA_SEEN')) { renderGuideStep(); document.getElementById('guide').style.display = 'block'; }
             setInterval(getRates, 300000);
         }
 
         function solicitarPermisoAutomatico() {
             if (!("Notification" in window)) return;
-            if (Notification.permission === "default") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        notifActivas = true; ultimaNotifDate = Date.now();
-                        new Notification("¡Activado!", { body: selectedTip, icon: "logo.png" });
-                        guardarEnLocal();
-                    }
-                });
-            } else if (Notification.permission === "granted" && !notifActivas) { notifActivas = true; guardarEnLocal(); }
-        }
-
-        function verificarNotificacionesSemanales() {
-            if (!notifActivas || Notification.permission !== "granted") return;
-            const unaSemanaMs = 7 * 24 * 60 * 60 * 1000;
-            if (!ultimaNotifDate || (Date.now() - ultimaNotifDate) > unaSemanaMs) {
-                new Notification("Recordatorio 📉", { body: `Registra tus gastos. Tip: ${selectedTip}`, icon: "logo.png" });
-                ultimaNotifDate = Date.now();
-                guardarEnLocal();
-            }
+            if (Notification.permission === "default") { Notification.requestPermission(); }
         }
 
         function setMonedaAnual(m) { monedaAnual = m; document.getElementById('cur-bs').classList.toggle('active', m === 'bs'); document.getElementById('cur-usd').classList.toggle('active', m === 'usd'); actualizarCalculos(); }
-        async function getRates() {
-            try {
-                const r = await fetch('https://ve.dolarapi.com/v1/dolares');
-                const d = await r.json();
-                rates.bcv = d.find(x => x.nombre === "Oficial").promedio;
-                rates.usdt = d.find(x => x.nombre === "Paralelo").promedio;
-                document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2);
-                document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2);
-                actualizarCalculos();
-            } catch (e) {}
-        }
-
+        async function getRates() { try { const r = await fetch('https://ve.dolarapi.com/v1/dolares'); const d = await r.json(); rates.bcv = d.find(x => x.nombre === "Oficial").promedio; rates.usdt = d.find(x => x.nombre === "Paralelo").promedio; document.querySelector('#btn-bcv b').innerText = rates.bcv.toFixed(2); document.querySelector('#btn-usdt b').innerText = rates.usdt.toFixed(2); actualizarCalculos(); } catch (e) {} }
         function seleccionarTasa(tipo) { tasaSeleccionada = tipo; document.getElementById('btn-bcv').classList.toggle('active', tipo === 'bcv'); document.getElementById('btn-usdt').classList.toggle('active', tipo === 'usdt'); renderTodo(); actualizarCalculos(); }
-        
-        function agregarEntrada(tipo) { 
-            if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; 
-            const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; 
-            const label = tipo === 'ingresos' ? "Ingreso" : (tipo === 'gastos' ? "Gasto" : "Ahorro");
-            registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); 
-            renderTodo(); 
-            actualizarCalculos();
-            enviarNotificacionCambio("Registro Creado 📂", `Se ha añadido un nuevo ${label} a tu lista.`);
-        }
-
+        function agregarEntrada(tipo) { if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = []; const icons = { ingresos: '💼', gastos: '🛒', ahorros: '🏦' }; registroAnual[mesActual][tipo].push({ icono: icons[tipo], desc: "", bs: 0, usd: 0 }); renderTodo(); actualizarCalculos(); }
         function renderTodo() { ['ingresos', 'gastos', 'ahorros'].forEach(t => renderLista(t, `lista-${t}`)); }
         function renderLista(tipo, id) { 
             const lista = document.getElementById(id); lista.innerHTML = ""; const tVal = rates[tasaSeleccionada]; const data = registroAnual[mesActual][tipo] || []; 
             data.forEach((item, i) => { 
                 const div = document.createElement('div'); div.className = "entry-card"; 
-                div.innerHTML = `<div class="entry-row">
-                    <input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)">
-                    <input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)">
-                    <div class="amount-group">
-                        <input type="number" class="amount-input" id="${tipo}-bs-${i}" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)" onblur="enviarNotificacionCambio('Monto Actualizado ✅', 'El cambio ha sido guardado exitosamente.')">
-                        <span class="sync-label" id="${tipo}-label-usd-${i}">$ ${(item.bs/tVal).toFixed(2)}</span>
-                    </div>
-                    <div class="amount-group" style="margin-left:5px;">
-                        <input type="number" class="amount-input" id="${tipo}-usd-${i}" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)" onblur="enviarNotificacionCambio('Monto Actualizado ✅', 'El cambio ha sido guardado exitosamente.')">
-                        <span class="sync-label" id="${tipo}-label-bs-${i}">Bs ${(item.usd*tVal).toFixed(0)}</span>
-                    </div>
-                    <span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span>
-                </div>`; 
+                div.innerHTML = `<div class="entry-row"><input type="text" class="emoji-input" maxlength="2" value="${item.icono}" oninput="editar('${tipo}', ${i}, 'icono', this.value)"><input type="text" class="desc-input" placeholder="Descripción" value="${item.desc}" oninput="editar('${tipo}', ${i}, 'desc', this.value)"><div class="amount-group"><input type="number" class="amount-input" placeholder="Bs" value="${item.bs || ""}" oninput="sync('${tipo}', ${i}, 'bs', this.value)"><span class="sync-label">$ ${(item.bs/tVal).toFixed(2)}</span></div><div class="amount-group" style="margin-left:5px;"><input type="number" class="amount-input" placeholder="$" value="${item.usd || ""}" oninput="sync('${tipo}', ${i}, 'usd', this.value)"><span class="sync-label">Bs ${(item.usd*tVal).toFixed(0)}</span></div><span class="delete-btn" onclick="borrar('${tipo}', ${i})">✕</span></div>`; 
                 lista.appendChild(div); 
             }); 
         }
-
-        function sync(tipo, idx, origen, valor) { 
-            const tVal = rates[tasaSeleccionada]; const item = registroAnual[mesActual][tipo][idx]; const num = parseFloat(valor) || 0; 
-            if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); const targetInput = document.getElementById(`${tipo}-usd-${idx}`); if (targetInput) targetInput.value = item.usd; } 
-            else { item.usd = num; item.bs = (num * tVal).toFixed(2); const targetInput = document.getElementById(`${tipo}-bs-${idx}`); if (targetInput) targetInput.value = item.bs; } 
-            const labelUsd = document.getElementById(`${tipo}-label-usd-${idx}`); const labelBs = document.getElementById(`${tipo}-label-bs-${idx}`);
-            if(labelUsd) labelUsd.innerText = `$ ${(item.bs/tVal).toFixed(2)}`; if(labelBs) labelBs.innerText = `Bs ${(item.usd*tVal).toFixed(0)}`;
-            actualizarCalculos(); 
-        }
-
+        function sync(tipo, idx, origen, valor) { const tVal = rates[tasaSeleccionada]; const item = registroAnual[mesActual][tipo][idx]; const num = parseFloat(valor) || 0; if (origen === 'bs') { item.bs = num; item.usd = (num / tVal).toFixed(2); } else { item.usd = num; item.bs = (num * tVal).toFixed(2); } actualizarCalculos(); }
         function editar(t, idx, c, v) { registroAnual[mesActual][t][idx][c] = v; actualizarCalculos(); }
-        
-        function borrar(t, idx) { 
-            registroAnual[mesActual][t].splice(idx, 1); 
-            renderTodo(); 
-            actualizarCalculos(); 
-            enviarNotificacionCambio("Registro Eliminado 🗑️", "La entrada ha sido removida de tu control mensual.");
-        }
-
+        function borrar(t, idx) { registroAnual[mesActual][t].splice(idx, 1); renderTodo(); actualizarCalculos(); }
         function actualizarCalculos() {
-            const tVal = rates[tasaSeleccionada]; let totAnual = { ing: 0, gas: 0, aho: 0 };
+            const tVal = rates[tasaSeleccionada];
             const saldosMensuales = meses.map(m => { if (!registroAnual[m]) return 0; const i = (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const g = (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const a = (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); return i - g - a; });
+            let totAnual = { ing: 0, gas: 0, aho: 0 };
             meses.forEach(m => { if (registroAnual[m]) { totAnual.ing += (registroAnual[m].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); totAnual.gas += (registroAnual[m].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); totAnual.aho += (registroAnual[m].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); } });
-            const format = (v) => monedaAnual === 'bs' ? `Bs ${fmtBs.format(v)}` : `$ ${fmtUsd.format(v/tVal)}`;
-            document.getElementById('ann-ing').innerText = format(totAnual.ing); document.getElementById('ann-gas').innerText = format(totAnual.gas); document.getElementById('ann-aho').innerText = format(totAnual.aho);
-            const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-            const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-            const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0);
-            const saldo = tIng - tGas - tAho;
+            document.getElementById('ann-ing').innerText = monedaAnual === 'bs' ? `Bs ${fmtBs.format(totAnual.ing)}` : `$ ${fmtUsd.format(totAnual.ing/tVal)}`;
+            document.getElementById('ann-gas').innerText = monedaAnual === 'bs' ? `Bs ${fmtBs.format(totAnual.gas)}` : `$ ${fmtUsd.format(totAnual.gas/tVal)}`;
+            document.getElementById('ann-aho').innerText = monedaAnual === 'bs' ? `Bs ${fmtBs.format(totAnual.aho)}` : `$ ${fmtUsd.format(totAnual.aho/tVal)}`;
+            const tIng = (registroAnual[mesActual].ingresos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const tGas = (registroAnual[mesActual].gastos || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const tAho = (registroAnual[mesActual].ahorros || []).reduce((s, n) => s + (parseFloat(n.bs) || 0), 0); const saldo = tIng - tGas - tAho;
             const elBs = document.getElementById('total-bs'); elBs.innerText = `Bs ${fmtFull.format(saldo)}`; elBs.style.color = saldo > 0 ? '#2ecc71' : (saldo < 0 ? '#e74c3c' : 'var(--text)');
             document.getElementById('total-usd').innerText = `$ ${(saldo / tVal).toFixed(2)}`;
             updateCharts(tIng, tGas, tAho, saldo, saldosMensuales); guardarEnLocal();
         }
-
-        function toggleTheme() { 
-            document.body.classList.toggle('light-mode'); 
-            if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); 
-            initCharts(); actualizarCalculos(); 
-            enviarNotificacionCambio("Interfaz Actualizada 🌗", "Has cambiado el modo de visualización.");
-        }
-        
+        function toggleTheme() { document.body.classList.toggle('light-mode'); if(barChart) barChart.destroy(); if(doughnutChart) doughnutChart.destroy(); if(lineChart) lineChart.destroy(); initCharts(); actualizarCalculos(); }
         function cambiarMes() { mesActual = document.getElementById('selector-mes').value; if (!registroAnual[mesActual]) { registroAnual[mesActual] = { ingresos: [], gastos: [], ahorros: [] }; } renderTodo(); actualizarCalculos(); }
-        
-        function guardarEnLocal() { 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); 
-        }
-
-        function cargarDeLocal() { 
-            let store = localStorage.getItem(STORAGE_KEY);
-            if (!store) { for (let key of OLD_KEYS) { let oldData = localStorage.getItem(key); if (oldData) { store = oldData; break; } } }
-            if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; notifActivas = obj.notifActivas || false; ultimaNotifDate = obj.ultimaNotifDate || null; setMonedaAnual(monedaAnual); } 
-            else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } 
-        }
-
+        function guardarEnLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify({ data: registroAnual, mes: mesActual, tasa: tasaSeleccionada, curAnual: monedaAnual, notifActivas: notifActivas, ultimaNotifDate: ultimaNotifDate })); }
+        function cargarDeLocal() { let store = localStorage.getItem(STORAGE_KEY); if (store) { const obj = JSON.parse(store); registroAnual = obj.data || {}; mesActual = obj.mes || mesActual; tasaSeleccionada = obj.tasa || 'bcv'; monedaAnual = obj.curAnual || 'bs'; notifActivas = obj.notifActivas || false; ultimaNotifDate = obj.ultimaNotifDate || null; setMonedaAnual(monedaAnual); } else { meses.forEach(m => { if(!registroAnual[m]) registroAnual[m] = { ingresos: [], gastos: [], ahorros: [] }; }); } }
         function initCharts() { 
             const textColor = document.body.classList.contains('light-mode') ? '#000' : '#fff'; 
             barChart = new Chart(document.getElementById('barChart'), { type: 'bar', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { display: true, ticks: { color: textColor, font: { size: 9 } }, grid: { display: false } } } } }); 
             doughnutChart = new Chart(document.getElementById('doughnutChart'), { type: 'doughnut', data: { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 2, borderColor: document.body.classList.contains('light-mode')?'#fff':'#0d0d0d', cutout: '65%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { color: textColor, font: { size: 10 }, usePointStyle: true } } } } }); 
-            lineChart = new Chart(document.getElementById('lineChart'), { type: 'line', data: { labels: meses.map(m => m.substring(0,3)), datasets: [{ data: [], borderColor: '#2ecc71', backgroundColor: (context) => { const chart = context.chart; const {ctx, chartArea} = chart; if (!chartArea) return null; const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top); gradient.addColorStop(0, 'rgba(231, 76, 60, 0.2)'); gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)'); gradient.addColorStop(1, 'rgba(46, 204, 113, 0.2)'); return gradient; }, fill: true, tension: 0.4, pointRadius: 6, pointHoverRadius: 8, pointBackgroundColor: '#fff', pointBorderColor: '#2ecc71', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true, backgroundColor: 'rgba(0,0,0,0.8)', padding: 12, bodyFont: { size: 12 } } }, scales: { y: { display: true, grid: { color: 'rgba(255,255,255,0.05)', drawBorder: false }, ticks: { display: false } }, x: { grid: { display: false }, ticks: { color: textColor, font: { size: 9, weight: 'bold' } } } } } });
+            lineChart = new Chart(document.getElementById('lineChart'), { type: 'line', data: { labels: meses.map(m => m.substring(0,3)), datasets: [{ data: [], borderColor: '#2ecc71', backgroundColor: (context) => { const chart = context.chart; const {ctx, chartArea} = chart; if (!chartArea) return null; const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top); gradient.addColorStop(0, 'rgba(231, 76, 60, 0.2)'); gradient.addColorStop(0.5, 'rgba(255, 255, 255, 0)'); gradient.addColorStop(1, 'rgba(46, 204, 113, 0.2)'); return gradient; }, fill: true, tension: 0.4, pointRadius: 4, pointHoverRadius: 6, pointBackgroundColor: '#fff', pointBorderColor: '#2ecc71', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: true } }, scales: { y: { display: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { display: false } }, x: { grid: { display: false }, ticks: { color: textColor, font: { size: 9, weight: 'bold' } } } } } });
         }
-
         function updateCharts(ing, gas, aho, sal, saldosAnuales) { 
             const barLabels = []; const barData = []; const barColors = []; 
             (registroAnual[mesActual].ingresos || []).forEach(i => { barLabels.push(`${i.icono || '💼'} ${i.desc.substring(0,4)}`); barData.push(i.bs); barColors.push('#2ecc71'); }); 
             (registroAnual[mesActual].gastos || []).forEach(g => { barLabels.push(`${g.icono || '🛒'} ${g.desc.substring(0,4)}`); barData.push(g.bs); barColors.push('#e74c3c'); }); 
             (registroAnual[mesActual].ahorros || []).forEach(a => { barLabels.push(`${a.icono || '🏦'} ${a.desc.substring(0,4)}`); barData.push(a.bs); barColors.push('#f1c40f'); }); 
             barChart.data.labels = barLabels; barChart.data.datasets[0].data = barData; barChart.data.datasets[0].backgroundColor = barColors; barChart.update(); 
-            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; 
-            if (sal > 0) { dLabels.push("Sobrante"); dData.push(sal); dCols.push("#2ecc71"); } 
+            const dLabels = ["Gastos", "Ahorros"]; const dData = [gas, aho]; const dCols = ["#e74c3c", "#f1c40f"]; if (sal > 0) { dLabels.push("Sobrante"); dData.push(sal); dCols.push("#2ecc71"); } 
             doughnutChart.data.labels = dLabels; doughnutChart.data.datasets[0].data = dData; doughnutChart.data.datasets[0].backgroundColor = dCols; doughnutChart.update(); 
-            const currentIdx = meses.indexOf(mesActual);
-            lineChart.data.datasets[0].data = saldosAnuales;
-            const currentVal = saldosAnuales[currentIdx];
-            lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
-            lineChart.data.datasets[0].pointBorderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c';
-            lineChart.update();
+            const currentIdx = meses.indexOf(mesActual); lineChart.data.datasets[0].data = saldosAnuales; const currentVal = saldosAnuales[currentIdx]; lineChart.data.datasets[0].borderColor = currentVal >= 0 ? '#2ecc71' : '#e74c3c'; lineChart.update();
         }
-        
         inicializar();
     </script>
 </body>
