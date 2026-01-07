@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
     <!-- Configuración de App Nativa (PWA) -->
-    <link rel="manifest" href="manifest.json?v=36">
+    <link rel="manifest" href="manifest.json?v=37">
     <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Finance Elite">
 
-    <title>Finance Elite Master - AI Voice Edition</title>
+    <title>Finance Elite Master - Pro AI</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
@@ -120,39 +120,33 @@
         .ai-input { background: var(--glass); border: none; color: var(--text); padding: 10px; border-radius: 15px; flex-grow: 1; outline: none; font-size: 0.8rem; }
         .ai-send { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; }
 
+        /* Estructura Base */
         .annual-summary { background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 22px; padding: 18px; margin-bottom: 20px; display: flex; justify-content: space-around; text-align: center; }
         .annual-item span { display: block; font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: 700; }
         .annual-item b { font-size: 0.85rem; font-weight: 800; letter-spacing: -0.3px; }
-        
         .rates-container { display: flex; gap: 10px; margin-bottom: 20px; }
         .rate-card { flex: 1; background: var(--glass); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid var(--glass-border); cursor: pointer; }
         .rate-card b { font-size: 1rem; font-weight: 700; display: block; margin-bottom: 2px; }
         .rate-card small { font-size: 0.55rem; opacity: 0.5; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
         .rate-card.active { border-color: var(--accent); background: rgba(255,255,255,0.08); }
-
         .section-label { font-size: 0.7rem; letter-spacing: 1.2px; margin-bottom: 12px; font-weight: 800; text-transform: uppercase; margin-left: 5px; }
         .entry-card { background: var(--glass); border: 1px solid var(--glass-border); padding: 12px; border-radius: 22px; margin-bottom: 8px; }
         .entry-row { display: flex; align-items: center; gap: 10px; flex-wrap: nowrap; }
         .emoji-input { background: var(--glass); border-radius: 12px; width: 38px; height: 38px; flex-shrink: 0; text-align: center; border: 1px solid var(--glass-border); color: var(--text); font-size: 1.2rem; outline: none; padding: 0; cursor: pointer; }
         .desc-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); flex-grow: 1; outline: none; font-size: 0.9rem; font-weight: 500; min-width: 50px; }
-        
         .amount-group { display: flex; flex-direction: column; width: 75px; flex-shrink: 0; }
         .amount-input { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text); width: 100%; outline: none; font-weight: 700; text-align: right; font-size: 0.95rem; }
         .sync-label { font-size: 0.6rem; opacity: 0.4; text-align: right; display: block; margin-top: 4px; font-weight: 600; }
-        
         .delete-btn { color: var(--text); cursor: pointer; font-size: 1.2rem; opacity: 0.2; padding-left: 5px; transition: 0.2s; }
         .delete-btn:active { opacity: 1; color: var(--col-gas); }
         .add-btn { background: transparent; border: 1px solid var(--glass-border); color: var(--text); opacity: 0.5; width: 100%; padding: 10px; border-radius: 15px; cursor: pointer; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px; }
-        
         .balance-section { text-align: center; margin: 30px 0 20px 0; padding-top: 20px; border-top: 1px solid var(--glass-border); }
         .sobrante-label { display: block; font-size: 0.65rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; opacity: 0.7; }
         #total-bs { font-size: 2.6rem; font-weight: 900; display: block; letter-spacing: -1.5px; }
         #total-usd { font-size: 1rem; opacity: 0.5; margin-top: 5px; display: block; font-weight: 600; }
-
         .tip-box { background: rgba(46, 204, 113, 0.05); border: 1px solid rgba(46, 204, 113, 0.2); padding: 15px; border-radius: 22px; margin-top: 25px; }
         .tip-box h4 { font-size: 0.6rem; font-weight: 900; text-transform: uppercase; margin: 0 0 5px 0; color: var(--col-ing); letter-spacing: 1px; }
         .tip-box p { font-size: 0.8rem; margin: 0; opacity: 0.8; line-height: 1.4; font-style: italic; }
-        
         .chart-box { height: 180px; width: 100%; position: relative; margin-top: 25px; }
         .chart-label { font-size: 0.6rem; font-weight: 800; opacity: 0.4; text-transform: uppercase; margin-bottom: 10px; display: block; text-align: center; }
 
@@ -174,7 +168,6 @@
 </head>
 <body>
 
-    <!-- MODAL DE LA GUIA INTERACTIVA -->
     <div id="guide" class="guide-overlay">
         <div class="guide-content">
             <div class="guide-header">
@@ -187,7 +180,7 @@
                 <button id="btn-prev" class="guide-btn btn-prev" onclick="changeStep(-1)" style="display:none">ATRÁS</button>
                 <button id="btn-next" class="guide-btn btn-next" onclick="changeStep(1)">SIGUIENTE</button>
             </div>
-            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v58.0</div>
+            <div style="text-align: center; opacity: 0.4; font-size: 0.65rem; margin-top: 30px; letter-spacing: 1px;">FINANCE ELITE MASTER v60.0</div>
         </div>
     </div>
 
@@ -220,7 +213,6 @@
             </div>
         </div>
 
-        <!-- BARRA MÁGICA AUTOMÁTICA CON VOZ INTELIGENTE -->
         <div class="magic-input-container">
             <input type="text" id="magic-bar" class="magic-input" placeholder="Di o escribe: 'Cena 500'..." onkeypress="handleMagicKey(event)">
             <button id="voice-btn" class="voice-btn" onclick="startVoiceRecognition()" title="Hablar con la IA">🎙️</button>
@@ -277,9 +269,10 @@
     </div>
 
     <script>
-        const apiKey = ""; 
+        // --- CONFIGURACIÓN CRÍTICA ---
+        // API KEY INTEGRADA PARA GITHUB PAGES
+        const apiKey = "AIzaSyAuERh-wiNL8GfMA02D_qhXN7buguJpVXA"; 
 
-        // --- CANAL DE COMUNICACIÓN (SYNC) ---
         const syncChannel = new BroadcastChannel('finance_sync_channel');
         syncChannel.onmessage = (event) => { if (event.data === 'sync_required') { cargarDeLocal(); renderTodo(); actualizarCalculos(); } };
 
@@ -287,10 +280,7 @@
         function toggleAIChat() { 
             const win = document.getElementById('ai-window'); 
             win.style.display = win.style.display === 'flex' ? 'none' : 'flex'; 
-            if(win.style.display === 'flex') {
-                const box = document.getElementById('ai-messages');
-                box.scrollTop = box.scrollHeight;
-            }
+            if(win.style.display === 'flex') document.getElementById('ai-messages').scrollTop = 9999;
         }
 
         function handleAIKey(e) { if (e.key === 'Enter') sendToAI(); }
@@ -306,11 +296,11 @@
             box.scrollTop = box.scrollHeight;
 
             const loaderId = "ai-loader-" + Date.now();
-            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Revisando tus registros...</div>`;
+            box.innerHTML += `<div id="${loaderId}" class="msg msg-ai">Analizando tus registros financieros...</div>`;
             box.scrollTop = box.scrollHeight;
 
             const context = JSON.stringify(registroAnual);
-            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Tu misión es ayudar al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde siempre basándote en los datos reales del JSON. No menciones que tienes acceso a archivos, habla como un consultor personal.`;
+            const systemPrompt = `Eres un analista financiero experto. Tienes acceso a estos datos en JSON: ${context}. El mes actual es ${mesActual}. Tu misión es ayudar al usuario a entender sus gastos e ingresos con profesionalismo y empatía. Responde siempre basándote en los datos reales del JSON proporcionado.`;
 
             try {
                 const response = await callGeminiAI(query, systemPrompt);
@@ -318,7 +308,7 @@
                 if (loader) loader.innerText = response;
             } catch (error) { 
                 const loader = document.getElementById(loaderId);
-                if (loader) loader.innerText = "Hubo un problema de conexión. Por favor, intenta de nuevo."; 
+                if (loader) loader.innerText = "Lo siento, Master. Hubo un problema al conectar con mi inteligencia artificial. Verifica tu conexión."; 
             }
             box.scrollTop = box.scrollHeight;
         }
@@ -338,8 +328,6 @@
                 });
                 
                 const result = await response.json();
-                
-                // Corrección: Manejo robusto de la respuesta de Gemini
                 if (result.candidates && result.candidates[0] && result.candidates[0].content) {
                     return result.candidates[0].content.parts[0].text;
                 } else if (result.error) {
@@ -348,9 +336,8 @@
                     throw new Error("Respuesta inválida de la IA");
                 }
             } catch (error) {
-                if (retries < 5) {
-                    const delay = Math.pow(2, retries) * 1000;
-                    await new Promise(res => setTimeout(res, delay));
+                if (retries < 3) {
+                    await new Promise(res => setTimeout(res, 1000 * Math.pow(2, retries)));
                     return callGeminiAI(userQuery, systemPrompt, retries + 1);
                 }
                 throw error;
@@ -369,10 +356,7 @@
             const input = document.getElementById('magic-bar');
             
             recognition.lang = 'es-ES';
-            recognition.onstart = () => { 
-                voiceBtn.classList.add('listening'); 
-                input.placeholder = "Escuchando...";
-            };
+            recognition.onstart = () => { voiceBtn.classList.add('listening'); input.placeholder = "Escuchando..."; };
             
             recognition.onresult = async (event) => { 
                 const transcript = event.results[0][0].transcript;
@@ -382,59 +366,36 @@
             
             recognition.onerror = (e) => { 
                 voiceBtn.classList.remove('listening');
-                let errorMsg = "Error al escuchar";
-                if (e.error === 'not-allowed') errorMsg = "Permiso denegado al micro";
-                else if (e.error === 'network') errorMsg = "Error de red";
-                input.placeholder = errorMsg;
-                console.error("Error Voz Detallado:", e.error);
+                console.error("Detalle Error Voz:", e.error);
+                let msg = "Error de Micrófono";
+                if(e.error === 'not-allowed') msg = "Permiso denegado al micrófono";
+                enviarNotificacionCambio("Error 🎙️", msg);
             };
             
-            recognition.onend = () => { 
-                voiceBtn.classList.remove('listening'); 
-                if (!input.value) input.placeholder = "Di o escribe...";
-            };
-            
+            recognition.onend = () => { voiceBtn.classList.remove('listening'); if (!input.value) input.placeholder = "Di o escribe..."; };
             recognition.start();
         }
 
         async function processVoiceWithAI(transcript) {
             const input = document.getElementById('magic-bar');
-            input.placeholder = "IA Procesando voz...";
+            input.placeholder = "IA Procesando...";
             
-            const systemPrompt = `Eres un procesador de lenguaje natural financiero. El usuario dirá una frase sobre un gasto, ingreso o ahorro. 
-            Debes extraer: 
-            1. El monto (SIEMPRE ES EN DÓLARES).
-            2. El tipo (ingresos, gastos o ahorros).
-            3. Una sola palabra clave para la descripción.
-            4. El emoji adecuado.
-            Responde ÚNICAMENTE con un JSON puro: {"tipo": "...", "icono": "...", "desc": "...", "monto_usd": 0.00}`;
+            const systemPrompt = `Extrae datos financieros: 1. Monto (ASUME USD). 2. Tipo (ingresos/gastos/ahorros). 3. Palabra clave descriptiva. 4. Emoji. Responde SOLO JSON: {"tipo": "...", "icono": "...", "desc": "...", "monto_usd": 0.00}`;
 
             try {
                 const aiResult = await callGeminiAI(transcript, systemPrompt);
-                const cleanJson = aiResult.replace(/```json|```/g, "").trim();
-                const data = JSON.parse(cleanJson);
+                const data = JSON.parse(aiResult.replace(/```json|```/g, "").trim());
                 
                 if (data.monto_usd > 0) {
                     const tVal = rates[tasaSeleccionada];
-                    const itemData = {
-                        icono: data.icono || "📝",
-                        desc: data.desc || "Voz",
-                        usd: data.monto_usd,
-                        bs: (data.monto_usd * tVal).toFixed(2)
-                    };
-
+                    const itemData = { icono: data.icono || "📝", desc: data.desc || "Voz", usd: data.monto_usd, bs: (data.monto_usd * tVal).toFixed(2) };
                     const tipo = data.tipo || 'gastos';
                     if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
                     registroAnual[mesActual][tipo].push(itemData);
-                    
-                    input.value = "";
-                    renderTodo();
-                    actualizarCalculos();
-                    enviarNotificacionCambio("Oído Maestro 🎙️", `Guardado ${data.icono} ${data.desc} por $${data.monto_usd}.`);
+                    input.value = ""; renderTodo(); actualizarCalculos();
+                    enviarNotificacionCambio("Oído Maestro 🎙️", `Guardado ${data.icono} por $${data.monto_usd}.`);
                 }
-            } catch (error) {
-                enviarNotificacionCambio("IA confundida 🤖", "No pude procesar la voz. Intenta de nuevo.");
-            }
+            } catch (error) { enviarNotificacionCambio("IA confundida 🤖", "Intenta de nuevo diciendo concepto y monto."); }
             input.placeholder = "Di o escribe...";
         }
 
@@ -445,19 +406,17 @@
             const val = input.value.trim();
             if (!val) return;
             const parts = val.split(" ");
-            let monto = 0; let palabras = [];
+            let monto = 0; let concepto = "";
             parts.forEach(p => {
                 const num = parseFloat(p.replace(",", "."));
                 if (!isNaN(num) && num > 0) monto = num;
-                else if (p.length > 2) palabras.push(p.toLowerCase());
+                else concepto += (concepto ? " " : "") + p;
             });
             if (monto === 0) return;
-            palabras.sort((a,b) => b.length - a.length);
-            const keyword = palabras[0] || "Registro";
             let tipo = 'gastos'; 
-            if (['pago', 'sueldo', 'ingreso'].some(k => keyword.includes(k))) tipo = 'ingresos';
+            if (['pago', 'sueldo', 'ingreso'].some(k => concepto.toLowerCase().includes(k))) tipo = 'ingresos';
             const tVal = rates[tasaSeleccionada];
-            const itemData = { icono: "📝", desc: keyword.charAt(0).toUpperCase() + keyword.slice(1), bs: monto, usd: (monto / tVal).toFixed(2) };
+            const itemData = { icono: "📝", desc: concepto || "Registro", bs: monto, usd: (monto / tVal).toFixed(2) };
             if (!registroAnual[mesActual][tipo]) registroAnual[mesActual][tipo] = [];
             registroAnual[mesActual][tipo].push(itemData);
             input.value = ""; renderTodo(); actualizarCalculos();
@@ -491,8 +450,8 @@
         let currentStep = 0;
         const guideSteps = [
             { title: "Bienvenido", icon: "📱", text: "Tu estación financiera personal con IA integrada." },
-            { title: "Voz Inteligente 🎙️", icon: "🧠", text: "Habla con naturalidad: 'Gasté 20 dólares en café'. La IA pondrá el emoji ☕, el monto en dólares y lo guardará solo." },
-            { title: "Analista IA 🤖", icon: "🚀", text: "Pregúntale lo que quieras sobre tus registros al chatbot robotizado." }
+            { title: "Voz Inteligente 🎙️", icon: "🧠", text: "Habla con naturalidad: 'Gasté 20 dólares en café'. La IA se encargará de todo." },
+            { title: "Analista IA 🤖", icon: "🚀", text: "Pregúntale lo que quieras sobre tus registros al chatbot." }
         ];
 
         function renderGuideStep() {
